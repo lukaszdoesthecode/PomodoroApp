@@ -59,4 +59,5 @@
     <string name="ninja_fruit_based_tomato_graphic">ninja fruit based tomato graphic</string>
     <string name="name">Name</string>
     <string name="date_of_birth">Date of Birth</string>
+    <string name="title_activity_work_time">WorkTimeActivity</string>
 </resources>
