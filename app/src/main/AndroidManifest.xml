@@ -18,10 +18,10 @@
             android:exported="false" />
 
         <activity
-            android:name=".SignUp"
+            android:name=".auth.SignUp"
             android:exported="false" />
         <activity
-            android:name=".LogIn"
+            android:name=".auth.LogIn"
             android:exported="true">
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
