@@ -122,7 +122,7 @@ class WorkTimeActivity : ComponentActivity() {
 
                         modifier = Modifier.padding(innerPadding),
                         onClickStartStop = ::startStopService,
-                        onClickRestart = {},
+                        onClickReset = ::resetAll,
                         timeSeconds = time,
                         sessionState = sessionState
                     )
@@ -161,6 +161,18 @@ class WorkTimeActivity : ComponentActivity() {
         timerRunning = false
     }
 
+    private fun resetAll() {
+        val sharedPref = getSharedPreferences("myPrefs", MODE_PRIVATE)
+        val editor = sharedPref.edit()
+        editor.remove("current_session")
+        editor.remove("remaining_time")
+        editor.remove("current_state_index")
+        editor.apply()
+        if(timerRunning) stopService()
+        restoreSessionStateSharedPrefs()
+        Toast.makeText(this, "Reset", Toast.LENGTH_SHORT).show()
+    }
+
     private fun startStopService() {
         if (timerRunning) {
             stopService()
@@ -190,6 +202,8 @@ class WorkTimeActivity : ComponentActivity() {
             return true
         }
         else{
+            time = sharedPref.getInt("work_duration", 25)
+            sessionState = SessionState.WORK
             return false
         }
     }
@@ -234,7 +248,7 @@ fun getSessionStateString(sessionState: Enum<SessionState>): String {
 }
 
 @Composable
-fun TimerView(modifier: Modifier = Modifier, onClickStartStop: () -> Unit, onClickRestart:() -> Unit, timeSeconds: Int, sessionState:  Enum<SessionState>) {
+fun TimerView(modifier: Modifier = Modifier, onClickStartStop: () -> Unit, onClickReset:() -> Unit, timeSeconds: Int, sessionState:  Enum<SessionState>) {
     val (mins, secs) = getMinsSecs(timeSeconds)
     Column(
         modifier = Modifier
@@ -301,7 +315,7 @@ fun TimerView(modifier: Modifier = Modifier, onClickStartStop: () -> Unit, onCli
             ) {
 
                 IconButton(
-                    onClick = onClickRestart,
+                    onClick = {},
                     modifier = Modifier
                         .background(Color.LightGray, shape = RoundedCornerShape(16.dp))
                 ) {
@@ -322,7 +336,7 @@ fun TimerView(modifier: Modifier = Modifier, onClickStartStop: () -> Unit, onCli
                     )
                 }
                 IconButton(
-                    onClick = {},
+                    onClick = onClickReset,
                     modifier = Modifier
                         .background(Color.LightGray, shape = RoundedCornerShape(16.dp))
                 ) {
@@ -349,7 +363,7 @@ fun TimerPreview() {
     PomodojoTheme {
         TimerView(
             onClickStartStop = {},
-            onClickRestart = {},
+            onClickReset = {},
             timeSeconds = 200,
             sessionState = SessionState.WORK)
 
