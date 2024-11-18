@@ -68,10 +68,10 @@ class LogIn : AppCompatActivity() {
 
 
         binding.save.setOnClickListener{
-            goWorkTime()
-//            if(validate()){
-//                loginUser()
-//            }
+            //goWorkTime()
+            if(validate()){
+                loginUser()
+           }
         }
     }
     /**
