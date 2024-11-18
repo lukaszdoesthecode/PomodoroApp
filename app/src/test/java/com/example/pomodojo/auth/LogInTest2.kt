@@ -20,7 +20,6 @@ import org.robolectric.Robolectric
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 import androidx.appcompat.app.AppCompatActivity
-import com.example.pomodojo.Main
 import com.google.android.material.textfield.TextInputLayout
 import org.mockito.kotlin.anyOrNull
 import com.example.pomodojo.R
