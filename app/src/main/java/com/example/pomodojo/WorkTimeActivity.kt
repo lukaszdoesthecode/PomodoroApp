@@ -66,9 +66,8 @@ class WorkTimeActivity : ComponentActivity() {
     private var serviceBoundState by mutableStateOf(false)
     private var time by mutableStateOf(5)
     private var sessionState by mutableStateOf(SessionState.WORK)
+
     // needed to communicate with the service.
-
-
     private val connection = object : ServiceConnection {
 
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
@@ -111,70 +110,6 @@ class WorkTimeActivity : ComponentActivity() {
             // if permission was denied, the service can still run only the notification won't be visible
         }
 
-    private fun tryToBindToServiceIfRunning() {
-        Intent(this, TimerService::class.java).also { intent ->
-            bindService(intent, connection, BIND_AUTO_CREATE)
-        }
-    }
-
-
-    fun runMyService() {
-        Log.d(TAG, "runMyService")
-        val intent=Intent(this,TimerService::class.java)
-        intent.putExtra("time", time)
-        intent.putExtra("sessionState", sessionState)
-        startForegroundService(intent)
-        tryToBindToServiceIfRunning()
-        timerRunning = true
-    }
-
-    fun stopService() {
-        timerService?.stopForegroundService()
-        unbindService(connection)
-        timerRunning = false
-    }
-
-    fun startStopService() {
-        if (timerRunning) {
-            stopService()
-        } else {
-            runMyService()
-        }
-    }
-
-    fun updateText() {
-        time += 1
-        Log.d(TAG, "updateText")
-    }
-
-
-    fun createSharedPrefs() {
-        val sharedPref = getSharedPreferences("myPrefs", MODE_PRIVATE)
-        val editor = sharedPref.edit()
-        editor.putInt("short_break_duration", 5)
-        editor.putInt("long_break_duration", 15)
-        editor.putInt("work_duration", 25)
-        editor.apply()
-    }
-
-
-
-
-    fun restoreSessionStateSharedPrefs(): Boolean{
-        val sharedPref = getSharedPreferences("myPrefs", MODE_PRIVATE)
-        val storedCurrentSession= sharedPref.getInt("current_session", -1)
-        val storedTime = sharedPref.getInt("remaining_time",  -1)
-
-        if(storedCurrentSession != -1 && storedTime != -1){
-            time = storedTime
-            sessionState = SessionState.entries[storedCurrentSession]
-            Toast.makeText(this, "Restored session state", Toast.LENGTH_SHORT).show()
-            return true
-        }
-        else{
-            return false
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -199,10 +134,64 @@ class WorkTimeActivity : ComponentActivity() {
         restoreSessionStateSharedPrefs()
     }
 
-
     override fun onDestroy() {
         super.onDestroy()
         unbindService(connection)
+    }
+
+    private fun tryToBindToServiceIfRunning() {
+        Intent(this, TimerService::class.java).also { intent ->
+            bindService(intent, connection, BIND_AUTO_CREATE)
+        }
+    }
+
+    private fun runMyService() {
+        Log.d(TAG, "runMyService")
+        val intent=Intent(this,TimerService::class.java)
+        intent.putExtra("time", time)
+        intent.putExtra("sessionState", sessionState)
+        startForegroundService(intent)
+        tryToBindToServiceIfRunning()
+        timerRunning = true
+    }
+
+    private fun stopService() {
+        timerService?.stopForegroundService()
+        unbindService(connection)
+        timerRunning = false
+    }
+
+    private fun startStopService() {
+        if (timerRunning) {
+            stopService()
+        } else {
+            runMyService()
+        }
+    }
+
+    private fun createSharedPrefs() {
+        val sharedPref = getSharedPreferences("myPrefs", MODE_PRIVATE)
+        val editor = sharedPref.edit()
+        editor.putInt("short_break_duration", 5)
+        editor.putInt("long_break_duration", 15)
+        editor.putInt("work_duration", 25)
+        editor.apply()
+    }
+
+    private fun restoreSessionStateSharedPrefs(): Boolean{
+        val sharedPref = getSharedPreferences("myPrefs", MODE_PRIVATE)
+        val storedCurrentSession= sharedPref.getInt("current_session", -1)
+        val storedTime = sharedPref.getInt("remaining_time",  -1)
+
+        if(storedCurrentSession != -1 && storedTime != -1){
+            time = storedTime
+            sessionState = SessionState.entries[storedCurrentSession]
+            Toast.makeText(this, "Restored session state", Toast.LENGTH_SHORT).show()
+            return true
+        }
+        else{
+            return false
+        }
     }
 
     /**
