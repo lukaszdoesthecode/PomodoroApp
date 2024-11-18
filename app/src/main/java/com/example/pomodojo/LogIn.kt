@@ -68,9 +68,10 @@ class LogIn : AppCompatActivity() {
 
 
         binding.save.setOnClickListener{
-            if(validate()){
-                loginUser()
-            }
+            goWorkTime()
+//            if(validate()){
+//                loginUser()
+//            }
         }
     }
     /**
@@ -112,6 +113,7 @@ class LogIn : AppCompatActivity() {
                     SnackBar.showSnackBar(binding.root, "Authentication failed.")
                 }
             }
+
     }
 
     /**
@@ -182,6 +184,13 @@ class LogIn : AppCompatActivity() {
                     SnackBar.showSnackBar(binding.root,"Google Authentication failed")
                 }
             }
+    }
+
+
+    private fun goWorkTime(){
+        val intent = Intent(this, WorkTimeActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 
     /**

@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,6 +18,7 @@ import android.content.ServiceConnection
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -27,12 +27,22 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.PlatformTextStyle
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -42,9 +52,16 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 
+
+//todo: find out how to make the persistent notification
+
+//todo: try to fix the background service so that it reliably runs
+// when the app is closed
+
 class WorkTimeActivity : ComponentActivity() {
 
     private var timerService: TimerService? = null
+    private var timerRunning by mutableStateOf(false)
 
     private var serviceBoundState by mutableStateOf(false)
     private var time by mutableStateOf(5)
@@ -83,6 +100,7 @@ class WorkTimeActivity : ComponentActivity() {
             serviceBoundState = false
             timerService = null
         }
+
     }
 
     // we need notification permission to be able to display a notification for the foreground service
@@ -103,15 +121,25 @@ class WorkTimeActivity : ComponentActivity() {
     fun runMyService() {
         Log.d(TAG, "runMyService")
         val intent=Intent(this,TimerService::class.java)
-        intent.putExtra("name","Geek for Geeks")
         intent.putExtra("time", time)
         intent.putExtra("sessionState", sessionState)
         startForegroundService(intent)
         tryToBindToServiceIfRunning()
+        timerRunning = true
     }
 
     fun stopService() {
         timerService?.stopForegroundService()
+        unbindService(connection)
+        timerRunning = false
+    }
+
+    fun startStopService() {
+        if (timerRunning) {
+            stopService()
+        } else {
+            runMyService()
+        }
     }
 
     fun updateText() {
@@ -119,8 +147,38 @@ class WorkTimeActivity : ComponentActivity() {
         Log.d(TAG, "updateText")
     }
 
+
+    fun createSharedPrefs() {
+        val sharedPref = getSharedPreferences("myPrefs", MODE_PRIVATE)
+        val editor = sharedPref.edit()
+        editor.putInt("short_break_duration", 5)
+        editor.putInt("long_break_duration", 15)
+        editor.putInt("work_duration", 25)
+        editor.apply()
+    }
+
+
+
+
+    fun restoreSessionStateSharedPrefs(): Boolean{
+        val sharedPref = getSharedPreferences("myPrefs", MODE_PRIVATE)
+        val storedCurrentSession= sharedPref.getInt("current_session", -1)
+        val storedTime = sharedPref.getInt("remaining_time",  -1)
+
+        if(storedCurrentSession != -1 && storedTime != -1){
+            time = storedTime
+            sessionState = SessionState.entries[storedCurrentSession]
+            Toast.makeText(this, "Restored session state", Toast.LENGTH_SHORT).show()
+            return true
+        }
+        else{
+            return false
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        createSharedPrefs()
         enableEdgeToEdge()
         setContent {
             PomodojoTheme {
@@ -128,8 +186,8 @@ class WorkTimeActivity : ComponentActivity() {
                     TimerView(
 
                         modifier = Modifier.padding(innerPadding),
-                        onClickPause = ::stopService,
-                        onClickStart = ::runMyService,
+                        onClickStartStop = ::startStopService,
+                        onClickRestart = {},
                         timeSeconds = time,
                         sessionState = sessionState
                     )
@@ -138,6 +196,7 @@ class WorkTimeActivity : ComponentActivity() {
         }
         Log.d(TAG, "onCreate WorkTimeActivity")
         checkAndRequestNotificationPermission()
+        restoreSessionStateSharedPrefs()
     }
 
 
@@ -186,7 +245,7 @@ fun getSessionStateString(sessionState: Enum<SessionState>): String {
 }
 
 @Composable
-fun TimerView(modifier: Modifier = Modifier, onClickPause: () -> Unit, onClickStart:() -> Unit, timeSeconds: Int, sessionState:  Enum<SessionState>) {
+fun TimerView(modifier: Modifier = Modifier, onClickStartStop: () -> Unit, onClickRestart:() -> Unit, timeSeconds: Int, sessionState:  Enum<SessionState>) {
     val (mins, secs) = getMinsSecs(timeSeconds)
     Column(
         modifier = Modifier
@@ -199,10 +258,12 @@ fun TimerView(modifier: Modifier = Modifier, onClickPause: () -> Unit, onClickSt
         //text in a box with rounded corners
         Box(
             modifier = Modifier
-                .background(Color.LightGray,
+                .background(
+                    Color.LightGray,
                     shape = RoundedCornerShape(20.dp)
-                    )
-                .border(BorderStroke(2.dp, Color.Black), shape = RoundedCornerShape(20.dp)).padding(8.dp)
+                )
+                .border(BorderStroke(2.dp, Color.Black), shape = RoundedCornerShape(20.dp))
+                .padding(8.dp)
 
 
         ) {
@@ -210,51 +271,76 @@ fun TimerView(modifier: Modifier = Modifier, onClickPause: () -> Unit, onClickSt
         }
 
 
-        Column(
-            modifier = Modifier.fillMaxSize(),
+        Column(modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
 
         ) {
             Column (horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(0.dp, Alignment.CenterVertically)
+                verticalArrangement = Arrangement.Center
                 ){
 
                 Text(
+
                     text = mins,
                     modifier = Modifier.padding(0.dp),
-                    fontSize = 200.sp,
-                    fontWeight = Bold,
+                    style = TextStyle(
+                        fontSize = 200.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        platformStyle = PlatformTextStyle(
+                            includeFontPadding = false
+                        )),
+
+
                 )
                 Text(
                     text = secs,
                     modifier = Modifier.padding(0.dp),
-                    fontSize = 200.sp,
-                    fontWeight = Bold
+                    style = TextStyle(
+                        fontSize = 200.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        platformStyle = PlatformTextStyle(
+                            includeFontPadding = false
+                        )),
                 )
             }
 
             Row(
                 //modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(20.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Button(
-                    onClick = onClickStart,
+
+                IconButton(
+                    onClick = onClickRestart,
                     modifier = Modifier
+                        .background(Color.LightGray, shape = RoundedCornerShape(16.dp))
                 ) {
-                    Text(text = "Start")
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = "More"
+                    )
                 }
-                Button(
-                    onClick = onClickPause,
+                IconButton(
+                    onClick = onClickStartStop,
                     modifier = Modifier
+                        .background(Color.LightGray, shape = RoundedCornerShape(16.dp))
+                        .size(75.dp)
                 ) {
-                    Text(text = "Pause")
+                    Icon(
+                        imageVector = Icons.Filled.PlayArrow,
+                        contentDescription = "Pause Icon"
+                    )
                 }
-                Button(
+                IconButton(
                     onClick = {},
                     modifier = Modifier
+                        .background(Color.LightGray, shape = RoundedCornerShape(16.dp))
                 ) {
-                    Text(text = "Restart")
+                    Icon(
+                        imageVector = Icons.Filled.Refresh,
+                        contentDescription = "Pause Icon"
+                    )
                 }
             }
     }
@@ -273,8 +359,8 @@ fun TimerView(modifier: Modifier = Modifier, onClickPause: () -> Unit, onClickSt
 fun TimerPreview() {
     PomodojoTheme {
         TimerView(
-            onClickPause = {},
-            onClickStart = {},
+            onClickStartStop = {},
+            onClickRestart = {},
             timeSeconds = 200,
             sessionState = SessionState.WORK)
 

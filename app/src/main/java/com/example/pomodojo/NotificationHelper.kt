@@ -21,22 +21,25 @@ internal object NotificationsHelper {
         // create the notification channel
         val channel = NotificationChannel(
             NOTIFICATION_CHANNEL_ID,
-           "Some string",
-            NotificationManager.IMPORTANCE_DEFAULT
+           "pomodojo_timer_channel",
+            NotificationManager.IMPORTANCE_HIGH
         )
         notificationManager.createNotificationChannel(channel)
     }
 
-    fun buildNotification(context: Context): Notification {
+
+
+    fun buildNotification(context: Context, title: String, text:String): Notification {
         return NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
-            .setContentTitle(context.getString(R.string.app_name))
-            .setContentText(context.getString(R.string.app_name))
+            .setContentTitle(title)
+            .setContentText(text)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
             .setContentIntent(Intent(context,
                 WorkTimeActivity::class.java).let { notificationIntent ->
                 PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE)
             })
+            .setOngoing(true)
             .build()
     }
 }

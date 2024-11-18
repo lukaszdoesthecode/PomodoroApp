@@ -1,7 +1,9 @@
 package com.example.pomodojo
 
+import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
@@ -24,6 +26,10 @@ object NotificationUtils {
 
 }
 
+
+//todo: use shared preferences to store the session duration and break duration
+
+
 class TimerService: Service() {
     private val binder = LocalBinder()
     private val _timeFlow = MutableStateFlow(1500)
@@ -32,11 +38,12 @@ class TimerService: Service() {
     private val _sessionStatusFlow = MutableStateFlow(SessionState.WORK)
     val sessionStatusFlow: StateFlow<SessionState> get() = _sessionStatusFlow
     private var performMainWorkJob: Job? = null
+    private lateinit var sharedPref: SharedPreferences
 
-    private val sessionTimeMap = mapOf(
-        SessionState.WORK to 2,
-        SessionState.SHORT_BREAK to 5,
-        SessionState.LONG_BREAK to 5
+    private var sessionTimeMap = mapOf(
+        SessionState.WORK to 1500,
+        SessionState.SHORT_BREAK to 300,
+        SessionState.LONG_BREAK to 900
     )
     private var currentSessionIndex = 0
 
@@ -69,16 +76,22 @@ class TimerService: Service() {
 
     override fun onCreate() {
         super.onCreate()
-
+        sharedPref = getSharedPreferences("myPrefs", MODE_PRIVATE)
+        sessionTimeMap = mapOf(
+            SessionState.WORK to sharedPref.getInt("work_duration", 1500),
+            SessionState.SHORT_BREAK to sharedPref.getInt("short_break_duration", 300),
+            SessionState.LONG_BREAK to sharedPref.getInt("long_break_duration", 900)
+        )
     }
 
     private fun changeSessionState() {
+
+
         currentSessionIndex = (currentSessionIndex + 1) % sessionSequence.size
         val nextSession = sessionSequence[currentSessionIndex]
         _sessionStatusFlow.value = nextSession
         updateTime(sessionTimeMap[nextSession] ?: 1500)
         Log.d("Session State", "Starting Session: ${SessionState.getSessionStateString(nextSession)}")
-
 
     }
 
@@ -91,8 +104,13 @@ class TimerService: Service() {
         }
     }
 
-    private suspend fun performMainWork(intent: Intent?) {
-        val name = intent?.getStringExtra("name")
+    private fun formatTime(time: Int): String {
+        val minutes = time / 60
+        val seconds = time % 60
+        return String.format("%02d:%02d", minutes, seconds)
+    }
+
+    private suspend fun performMainWork() {
         Log.d("Service Status", "Starting Service")
 
         makeToastAsync("Service has started running in the background")
@@ -100,6 +118,8 @@ class TimerService: Service() {
         while (timeFlow.value > 0) {
             delay(1000)
             updateTime(timeFlow.value - 1)
+            var currentSessionString = SessionState.getSessionStateString(sessionSequence[currentSessionIndex])
+            updateNotification("Pomodojo", "${currentSessionString}: ${formatTime(timeFlow.value)}")
             Log.d("Status", "Time ${timeFlow.value}")
 
             if(timeFlow.value == 0){
@@ -113,12 +133,22 @@ class TimerService: Service() {
 
     }
 
+    private fun updateNotification(title: String, text: String) {
+        val notification = NotificationsHelper.buildNotification(this, title, text)
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.notify(1, notification)
+    }
+
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        initSessionState()
+
+        performMainWorkJob = serviceScope.launch {
+            performMainWork()
+        }
+
         // create the notification channel
-        val initialTime = intent?.getIntExtra("time", 10)
-        _timeFlow.value = sessionTimeMap[sessionSequence[0]] ?: 1500
-        _sessionStatusFlow.value = SessionState.WORK
+
 
         NotificationsHelper.createNotificationChannel(this)
 
@@ -126,7 +156,7 @@ class TimerService: Service() {
         ServiceCompat.startForeground(
             this,
             1,
-            NotificationsHelper.buildNotification(this),
+            NotificationsHelper.buildNotification(this, "Pomodojo", "Session starting"),
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
             } else {
@@ -134,9 +164,6 @@ class TimerService: Service() {
             }
         )
 
-        performMainWorkJob = serviceScope.launch {
-            performMainWork(intent)
-        }
 
         return START_STICKY
     }
@@ -153,9 +180,46 @@ class TimerService: Service() {
         stopSelf()
     }
 
+    fun initSessionState(){
+        val restored = restoreSessionStateSharedPrefs()
+
+        if(!restored){
+            _timeFlow.value = sessionTimeMap[sessionSequence[0]] ?: 1500
+            _sessionStatusFlow.value = SessionState.WORK
+        }
+    }
+
+    fun restoreSessionStateSharedPrefs(): Boolean{
+        val sharedPref = getSharedPreferences("myPrefs", MODE_PRIVATE)
+        val storedCurrentState = sharedPref.getInt("current_state_index", -1)
+        val storedTime = sharedPref.getInt("remaining_time",  -1)
+
+        if(storedCurrentState != -1 && storedTime != -1){
+            _timeFlow.value = storedTime
+            currentSessionIndex = storedCurrentState
+            _sessionStatusFlow.value = sessionSequence[currentSessionIndex]
+            Log.d("Restored", "Restored session state")
+            return true
+        }
+        else{
+            return false
+        }
+    }
+
+    fun storeSessionStateSharedPrefs() {
+        val sharedPref = getSharedPreferences("myPrefs", MODE_PRIVATE)
+        val editor = sharedPref.edit()
+        editor.putInt("current_state_index", currentSessionIndex)
+        editor.putInt("remaining_time", timeFlow.value)
+        editor.putInt("current_session", sessionStatusFlow.value.ordinal)
+        editor.apply()
+        Log.d("Stored", "Stored session state")
+    }
+
 
     override fun onDestroy() {
         performMainWorkJob?.cancel()
+        storeSessionStateSharedPrefs()
         Toast.makeText(
             applicationContext, "Service execution completed",
             Toast.LENGTH_SHORT
