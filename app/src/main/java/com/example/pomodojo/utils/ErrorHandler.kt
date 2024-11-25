@@ -1,8 +1,9 @@
+@file:Suppress("DEPRECATION")
+
 package com.example.pomodojo.utils
 
 import android.view.View
 import com.example.pomodojo.R
-import com.example.pomodojo.utils.ErrorSnackBar
 import com.google.android.material.textfield.TextInputLayout
 import java.util.Calendar
 

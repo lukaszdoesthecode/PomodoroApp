@@ -63,4 +63,8 @@
     <string name="title_activity_a">A</string>
     <string name="title_activity_log">Log</string>
     <string name="title_activity_s">S</string>
+    <string name="message_delivered">Message Delivered!</string>
+    <string name="your_message_was_able_to_be_send">Your message was able to be send.</string>
+    <string name="your_message_was_unable_to_send">Your message was unable to send.</string>
+    <string name="message_not_delivered">Message Not Delivered!</string>
 </resources>

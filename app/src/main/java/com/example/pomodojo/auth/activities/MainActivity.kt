@@ -8,8 +8,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.pomodojo.auth.viewmodels.MainViewModel
 import com.example.pomodojo.auth.screens.MainScreen
+import com.example.pomodojo.auth.viewmodels.MainViewModel
 
 class MainActivity : ComponentActivity() {
 
@@ -31,13 +31,13 @@ class MainActivity : ComponentActivity() {
         val navigateToPomodoro = viewModel.navigateToPomodoro.observeAsState()
 
         navigateToFaceScan.value?.let {
-           // startActivity(Intent(this@MainActivity, FaceScan::class.java))
+           //startActivity(Intent(this@MainActivity, FaceScan::class.java))
             finish()
             viewModel.resetNavigation()
         }
 
         navigateToSpotify.value?.let {
-           // startActivity(Intent(this@MainActivity, Spotify::class.java))
+            // startActivity(Intent(this@MainActivity, Spotify::class.java))
             finish()
             viewModel.resetNavigation()
         }

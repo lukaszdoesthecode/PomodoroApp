@@ -15,12 +15,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.pomodojo.R
 import com.example.pomodojo.auth.ui.theme.*
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.pomodojo.auth.viewmodels.SignUpViewModel
 import java.text.SimpleDateFormat
 import java.util.*
@@ -33,9 +35,17 @@ fun SignUpScreen(viewModel: SignUpViewModel = viewModel()) {
     var password by remember { mutableStateOf("") }
     var repeat by remember { mutableStateOf("") }
 
+    var nameError by remember { mutableStateOf(false) }
     var dobError by remember { mutableStateOf(false) }
     var passwordError by remember { mutableStateOf(false) }
     var repeatPasswordError by remember { mutableStateOf(false) }
+
+    var passwordVisible by remember { mutableStateOf(false) }
+    var repeatPasswordVisible by remember { mutableStateOf(false) }
+
+    val validateName = { input: String ->
+        nameError = input.trim().split(" ").size < 2
+    }
 
     val validateDob = { date: String ->
         dobError = false
@@ -51,9 +61,9 @@ fun SignUpScreen(viewModel: SignUpViewModel = viewModel()) {
         }
     }
 
-    val validatePassword = { password: String ->
+    val validatePassword = { pass: String ->
         val passwordRegex = Regex("^(?=.*[A-Z])(?=.*\\d)(?=.*[@\$!%*?&])[A-Za-z\\d@\$!%*?&]{6,}\$")
-        passwordError = !passwordRegex.matches(password)
+        passwordError = !passwordRegex.matches(pass)
     }
 
     Column(
@@ -102,28 +112,36 @@ fun SignUpScreen(viewModel: SignUpViewModel = viewModel()) {
                 .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            Divider(
-                color = Primary,
+            HorizontalDivider(
                 modifier = Modifier
                     .weight(1f)
                     .height(2.dp)
-                    .padding(end = 16.dp)
+                    .padding(end = 16.dp),
+                color = Primary
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Divider(
-                color = Color.White,
+            HorizontalDivider(
                 modifier = Modifier
                     .weight(1f)
                     .height(2.dp)
-                    .padding(start = 16.dp)
-
+                    .padding(start = 16.dp),
+                color = Color.White
             )
         }
 
-
         Spacer(modifier = Modifier.height(48.dp))
 
-        InputField("Name", name, onValueChange = { name = it })
+        InputField(
+            label = "Full Name",
+            value = name,
+            onValueChange = {
+                name = it
+                validateName(name)
+            },
+            isError = nameError,
+            errorMessage = if (nameError) "Please enter at least a first and last name" else null
+        )
+
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -144,7 +162,7 @@ fun SignUpScreen(viewModel: SignUpViewModel = viewModel()) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        InputField(
+        InputFieldWithVisibility(
             label = "Password",
             value = password,
             onValueChange = {
@@ -152,12 +170,14 @@ fun SignUpScreen(viewModel: SignUpViewModel = viewModel()) {
                 validatePassword(password)
             },
             isError = passwordError,
-            errorMessage = "Password must have 6+ chars, 1 uppercase, 1 number, and 1 special character"
+            errorMessage = "Password must have 6+ chars, 1 uppercase, 1 number, and 1 special character",
+            passwordVisible = passwordVisible,
+            onPasswordVisibilityChange = { passwordVisible = it }
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        InputField(
+        InputFieldWithVisibility(
             label = "Repeat Password",
             value = repeat,
             onValueChange = {
@@ -165,7 +185,9 @@ fun SignUpScreen(viewModel: SignUpViewModel = viewModel()) {
                 repeatPasswordError = password != repeat
             },
             isError = repeatPasswordError,
-            errorMessage = "Passwords do not match"
+            errorMessage = "Passwords do not match",
+            passwordVisible = repeatPasswordVisible,
+            onPasswordVisibilityChange = { repeatPasswordVisible = it }
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -173,7 +195,7 @@ fun SignUpScreen(viewModel: SignUpViewModel = viewModel()) {
         Button(
             onClick = {
                 if (name.isNotBlank() && email.isNotBlank() && !dobError && !passwordError && !repeatPasswordError) {
-                    viewModel.createAnAccount(email, password)
+                    viewModel.createAnAccount(name, dob, email, password)
                 }
             },
             modifier = Modifier
@@ -204,6 +226,61 @@ fun InputField(
             onValueChange = onValueChange,
             label = { Text(label) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = White,
+                unfocusedContainerColor = White,
+                cursorColor = Primary,
+                focusedTextColor = Primary,
+                unfocusedTextColor = ShadowD,
+                focusedLabelColor = ShadowD,
+                unfocusedLabelColor = ShadowL,
+                focusedIndicatorColor = Primary,
+                unfocusedIndicatorColor = Primary
+            ),
+            isError = isError
+        )
+        if (isError && errorMessage != null) {
+            Text(
+                text = errorMessage,
+                color = Color.Red,
+                fontSize = 12.sp,
+                modifier = Modifier.padding(start = 16.dp)
+            )
+        }
+    }
+}
+
+
+@Composable
+fun InputFieldWithVisibility(
+    label: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+    isError: Boolean = false,
+    errorMessage: String? = null,
+    passwordVisible: Boolean,
+    onPasswordVisibilityChange: (Boolean) -> Unit
+) {
+    Column {
+        TextField(
+            value = value,
+            onValueChange = onValueChange,
+            label = { Text(label) },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            trailingIcon = {
+                IconButton(onClick = { onPasswordVisibilityChange(!passwordVisible) }) {
+                    Icon(
+                        painter = painterResource(
+                            id = if (passwordVisible) R.drawable.ic_visibility else R.drawable.ic_visibility_off
+                        ),
+                        contentDescription = if (passwordVisible) "Hide password" else "Show password"
+                    )
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),

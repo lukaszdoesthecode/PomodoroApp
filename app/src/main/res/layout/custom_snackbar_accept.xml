@@ -1,5 +1,4 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="16dp">
@@ -25,16 +24,16 @@
                 android:id="@+id/snackbar_main_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/message_not_delivered"
+                android:text="@string/message_delivered"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="@color/error" />
+                android:textColor="@color/primary" />
 
             <TextView
                 android:id="@+id/snackbar_sub_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/your_message_was_unable_to_send"
+                android:text="@string/your_message_was_able_to_be_send"
                 android:textSize="14sp"
                 android:textColor="@color/primary"
                 android:layout_marginTop="4dp" />
@@ -45,11 +44,10 @@
         android:id="@+id/snackbar_icon"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:src="@drawable/ic_error"
+        android:src="@drawable/ic_check"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
         android:layout_marginStart="0dp"
-        android:scaleType="centerInside"
-        tools:ignore="ContentDescription" />
+        android:scaleType="centerInside" />
 
 </RelativeLayout>
