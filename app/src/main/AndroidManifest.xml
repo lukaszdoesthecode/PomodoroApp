@@ -15,58 +15,13 @@
         android:theme="@style/Theme.Pomodojo"
         tools:targetApi="31">
         <activity
-            android:name=".PastSessionDetailsActivity"
+            android:name=".auth.activities.MainActivity"
             android:exported="false" />
         <activity
-            android:name=".AccountActivity"
+            android:name=".activities.SignUpActivity"
             android:exported="false" />
         <activity
-            android:name=".HistoryActivity"
-            android:exported="false" />
-        <activity
-            android:name=".SummaryActivity"
-            android:exported="false" />
-        <activity
-            android:name=".LongBreakActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ShortBreakActivity"
-            android:exported="false" />
-        <activity
-            android:name=".StatsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".SettingsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".HomeActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ResetSuccessfulActivity"
-            android:exported="false" />
-        <activity
-            android:name=".SetNewPasswordActivity"
-            android:exported="false" />
-        <activity
-            android:name=".EnterCodeActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ForgotPasswordActivity"
-            android:exported="false" />
-        <activity
-            android:name=".WelcomeActivity"
-            android:exported="false" />
-        <activity
-            android:name=".SplashActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Main"
-            android:exported="false" />
-        <activity
-            android:name=".SignUp"
-            android:exported="false" />
-        <activity
-            android:name=".LogIn"
+            android:name=".auth.activities.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
