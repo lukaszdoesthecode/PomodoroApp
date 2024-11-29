@@ -136,7 +136,10 @@ class WorkTimeActivity : ComponentActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        unbindService(connection)
+        if (timerService != null) {
+            unbindService(connection)
+        }
+        //unbindService(connection)
     }
 
     private fun tryToBindToServiceIfRunning() {

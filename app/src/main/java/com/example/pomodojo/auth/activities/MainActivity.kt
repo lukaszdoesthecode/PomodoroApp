@@ -1,6 +1,8 @@
 package com.example.pomodojo.auth.activities
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
@@ -8,6 +10,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.pomodojo.WorkTimeActivity
 import com.example.pomodojo.auth.screens.MainScreen
 import com.example.pomodojo.auth.viewmodels.MainViewModel
 
@@ -23,6 +26,9 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    
+    
 
     @Composable
     fun MainScreenWithViewModel(viewModel: MainViewModel = viewModel()) {
@@ -44,7 +50,8 @@ class MainActivity : ComponentActivity() {
 
         navigateToPomodoro.value?.let {
             //startActivity(Intent(this@MainActivity, Pomodoro::class.java))
-            finish()
+            val intent = Intent(this, WorkTimeActivity::class.java)
+            startActivity(intent)
             viewModel.resetNavigation()
         }
 
