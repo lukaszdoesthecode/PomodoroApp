@@ -5,6 +5,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.viewinterop.AndroidView
 import com.google.android.material.snackbar.Snackbar
 import com.example.pomodojo.R
 
@@ -46,4 +49,19 @@ class ErrorSnackBar {
             snackbar.show()
         }
     }
+}
+
+@Composable
+fun ErrorSnackBarPreview() {
+    AndroidView(factory = { context ->
+        val view = LayoutInflater.from(context).inflate(R.layout.activity_home, null) as ViewGroup
+        ErrorSnackBar.showErrorSnackBar(view, "Error occurred", "Please try again")
+        view
+    })
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewErrorSnackBar() {
+    ErrorSnackBarPreview()
 }

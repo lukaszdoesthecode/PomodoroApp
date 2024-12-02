@@ -30,7 +30,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import com.example.pomodojo.R
-//TODO: more less layout from figma, needs to be updated when rest of functionalities are working
+
+/**
+ * Composable function that displays the main screen of the application.
+ *
+ * @param viewModel The ViewModel that handles the logic for the Home screen.
+ * @param backgroundColor The background color of the screen.
+ */
 @Composable
 fun MainScreen(
     viewModel: HomeViewModel = viewModel(),
@@ -183,13 +189,14 @@ fun MainScreen(
                 }
             }
 
-
             Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }
 
-
+/**
+ * Composable function that displays the bottom navigation bar.
+ */
 @Composable
 fun BottomNavigationBar() {
     var selectedItem by remember { mutableIntStateOf(0) }
@@ -211,6 +218,13 @@ fun BottomNavigationBar() {
     }
 }
 
+/**
+ * Composable function that displays a card for a past session.
+ *
+ * @param date The date of the past session.
+ * @param timeSpent The time spent in the past session.
+ * @param cycles The number of cycles completed in the past session.
+ */
 @Composable
 fun PastSessionCard(date: String, timeSpent: String, cycles: String) {
     Column(
@@ -226,6 +240,12 @@ fun PastSessionCard(date: String, timeSpent: String, cycles: String) {
     }
 }
 
+/**
+ * Composable function that displays a time option.
+ *
+ * @param title The title of the time option.
+ * @param time The time value of the time option.
+ */
 @Composable
 fun TimeOption(title: String, time: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -244,6 +264,11 @@ fun TimeOption(title: String, time: String) {
     }
 }
 
+/**
+ * Composable function that displays a mood icon.
+ *
+ * @param emoji The emoji representing the mood.
+ */
 @Composable
 fun MoodIcon(emoji: String) {
     Text(
@@ -253,6 +278,9 @@ fun MoodIcon(emoji: String) {
     )
 }
 
+/**
+ * Composable function that previews the main screen.
+ */
 @Preview(showBackground = true)
 @Composable
 fun MainScreenPreview() {

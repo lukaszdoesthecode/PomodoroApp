@@ -32,6 +32,11 @@ import com.example.pomodojo.ui.theme.ShadowD
 import com.example.pomodojo.ui.theme.ShadowL
 import com.example.pomodojo.ui.theme.White
 
+/**
+ * Composable function that displays the Login screen.
+ *
+ * @param viewModel The ViewModel that handles the logic for the Login screen.
+ */
 @Composable
 fun LoginScreen(viewModel: LoginViewModel = viewModel()) {
     var email by remember { mutableStateOf("") }
@@ -178,6 +183,17 @@ fun LoginScreen(viewModel: LoginViewModel = viewModel()) {
     }
 }
 
+/**
+ * Composable function that displays an input field with password visibility toggle for the Login screen.
+ *
+ * @param label The label for the input field.
+ * @param value The current value of the input field.
+ * @param isError Indicates if there is an error in the input field.
+ * @param errorMessage The error message to display if there is an error.
+ * @param passwordVisible Indicates if the password is visible.
+ * @param onValueChange Callback to handle changes in the input field value.
+ * @param onPasswordVisibilityChange Callback to handle changes in the password visibility.
+ */
 @Composable
 fun InputFieldWithVisibilityLogIn(
     label: String,
@@ -231,4 +247,3 @@ fun InputFieldWithVisibilityLogIn(
         }
     }
 }
-

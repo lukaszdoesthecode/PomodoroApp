@@ -8,6 +8,11 @@ import com.example.pomodojo.core.utils.ErrorSnackBar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
+/**
+ * ViewModel for handling the logic of the Sign-Up screen.
+ *
+ * @param application The application context.
+ */
 @Suppress("INFERRED_TYPE_VARIABLE_INTO_EMPTY_INTERSECTION_WARNING")
 class SignUpViewModel(application: Application) : AndroidViewModel(application) {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
@@ -15,6 +20,14 @@ class SignUpViewModel(application: Application) : AndroidViewModel(application) 
     private val _navigateToLogIn = MutableLiveData<Unit>()
     val navigateToLogIn: LiveData<Unit> = _navigateToLogIn
 
+    /**
+     * Creates a new user account with the provided information and saves it to Firestore.
+     *
+     * @param fullName The full name of the user.
+     * @param dob The date of birth of the user.
+     * @param email The email address of the user.
+     * @param password The password for the new account.
+     */
     fun createAnAccount(fullName: String, dob: String, email: String, password: String) {
         val nameParts = fullName.trim().split(" ")
         val name = nameParts.first()
@@ -38,18 +51,20 @@ class SignUpViewModel(application: Application) : AndroidViewModel(application) 
                                 _navigateToLogIn.postValue(Unit)
                             }
                             .addOnFailureListener { _ ->
+                                ErrorSnackBar.showErrorSnackBar(getApplication(), "Error", "Error while saving user information.")
                             }
                     } else {
-                        ErrorSnackBar.showErrorSnackBar(getApplication(), "Error","Error while creating account.")
-
+                        ErrorSnackBar.showErrorSnackBar(getApplication(), "Error", "Error while creating account.")
                     }
                 } else {
-                    ErrorSnackBar.showErrorSnackBar(getApplication(), "Error","Error while authenticating.")
-
+                    ErrorSnackBar.showErrorSnackBar(getApplication(), "Error", "Error while authenticating.")
                 }
             }
     }
 
+    /**
+     * Navigates to the Login screen.
+     */
     fun navigateToLogIn() {
         _navigateToLogIn.postValue(Unit)
     }

@@ -32,6 +32,11 @@ import com.example.pomodojo.ui.theme.White
 import java.text.SimpleDateFormat
 import java.util.*
 
+/**
+ * Composable function that displays the Sign-Up screen.
+ *
+ * @param viewModel The ViewModel that handles the logic for the Sign-Up screen.
+ */
 @Composable
 fun SignUpScreen(viewModel: SignUpViewModel = viewModel()) {
     var name by remember { mutableStateOf("") }
@@ -48,10 +53,21 @@ fun SignUpScreen(viewModel: SignUpViewModel = viewModel()) {
     var passwordVisible by remember { mutableStateOf(false) }
     var repeatPasswordVisible by remember { mutableStateOf(false) }
 
+    /**
+     * Validates the name input. Sets the nameError flag if the input does not contain at least two words.
+     *
+     * @param input The name input to validate.
+     */
     val validateName = { input: String ->
         nameError = input.trim().split(" ").size < 2
     }
 
+    /**
+     * Validates the date of birth input. Sets the dobError flag if the input is not a valid date
+     * or if it is not within the acceptable range (01/01/1900 to the current date).
+     *
+     * @param date The date of birth input to validate.
+     */
     val validateDob = { date: String ->
         dobError = false
         val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.US)
@@ -66,6 +82,11 @@ fun SignUpScreen(viewModel: SignUpViewModel = viewModel()) {
         }
     }
 
+    /**
+     * Validates the password input. Sets the passwordError flag if the input does not meet the required criteria.
+     *
+     * @param pass The password input to validate.
+     */
     val validatePassword = { pass: String ->
         val passwordRegex = Regex("^(?=.*[A-Z])(?=.*\\d)(?=.*[@\$!%*?&])[A-Za-z\\d@\$!%*?&]{6,}\$")
         passwordError = !passwordRegex.matches(pass)
@@ -147,7 +168,6 @@ fun SignUpScreen(viewModel: SignUpViewModel = viewModel()) {
             errorMessage = if (nameError) "Please enter at least a first and last name" else null
         )
 
-
         Spacer(modifier = Modifier.height(16.dp))
 
         InputField(
@@ -217,6 +237,15 @@ fun SignUpScreen(viewModel: SignUpViewModel = viewModel()) {
     }
 }
 
+/**
+ * Composable function that displays an input field.
+ *
+ * @param label The label for the input field.
+ * @param value The current value of the input field.
+ * @param onValueChange Callback to handle changes in the input field value.
+ * @param isError Indicates if there is an error in the input field.
+ * @param errorMessage The error message to display if there is an error.
+ */
 @Composable
 fun InputField(
     label: String,
@@ -258,7 +287,17 @@ fun InputField(
     }
 }
 
-
+/**
+ * Composable function that displays an input field with password visibility toggle.
+ *
+ * @param label The label for the input field.
+ * @param value The current value of the input field.
+ * @param onValueChange Callback to handle changes in the input field value.
+ * @param isError Indicates if there is an error in the input field.
+ * @param errorMessage The error message to display if there is an error.
+ * @param passwordVisible Indicates if the password is visible.
+ * @param onPasswordVisibilityChange Callback to handle changes in the password visibility.
+ */
 @Composable
 fun InputFieldWithVisibility(
     label: String,
@@ -313,6 +352,9 @@ fun InputFieldWithVisibility(
     }
 }
 
+/**
+ * Preview function for the SignUpScreen composable.
+ */
 @Preview(showBackground = true)
 @Composable
 fun SignUpScreenPreview() {

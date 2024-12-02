@@ -23,6 +23,11 @@ import com.google.firebase.auth.FirebaseAuth
 import java.text.SimpleDateFormat
 import java.util.*
 
+/**
+ * Composable function that displays the Follow-Up screen for completing user account information.
+ *
+ * @param viewModel The ViewModel that handles the logic for the Follow-Up screen.
+ */
 @Composable
 fun FollowUpScreen(viewModel: FollowUpViewModel = viewModel()) {
     var name by remember { mutableStateOf("") }
@@ -32,11 +37,21 @@ fun FollowUpScreen(viewModel: FollowUpViewModel = viewModel()) {
     var nameError by remember { mutableStateOf(false) }
     var dobError by remember { mutableStateOf(false) }
 
-
+    /**
+     * Validates the name input. Sets the nameError flag if the input does not contain at least two words.
+     *
+     * @param input The name input to validate.
+     */
     val validateName = { input: String ->
         nameError = input.trim().split(" ").size < 2
     }
 
+    /**
+     * Validates the date of birth input. Sets the dobError flag if the input is not a valid date
+     * or if it is not within the acceptable range (01/01/1900 to the current date).
+     *
+     * @param date The date of birth input to validate.
+     */
     val validateDob = { date: String ->
         dobError = false
         val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.US)
@@ -85,7 +100,6 @@ fun FollowUpScreen(viewModel: FollowUpViewModel = viewModel()) {
             errorMessage = if (nameError) "Please enter first and last name" else null
         )
 
-
         Spacer(modifier = Modifier.height(16.dp))
 
         InputField(
@@ -100,7 +114,6 @@ fun FollowUpScreen(viewModel: FollowUpViewModel = viewModel()) {
         )
 
         Spacer(modifier = Modifier.height(16.dp))
-
 
         Button(
             onClick = {
@@ -119,9 +132,12 @@ fun FollowUpScreen(viewModel: FollowUpViewModel = viewModel()) {
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-    }}
+    }
+}
 
-
+/**
+ * Preview function for the FollowUpScreen composable.
+ */
 @Preview(showBackground = true)
 @Composable
 fun FollowUpScreenPreview() {
@@ -129,4 +145,3 @@ fun FollowUpScreenPreview() {
         FollowUpScreen()
     }
 }
-

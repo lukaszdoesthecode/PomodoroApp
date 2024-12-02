@@ -11,7 +11,7 @@ import com.example.pomodojo.R
 /**
  * Class that creates a custom Snackbar with a unique style.
  */
-class SnackBar {
+class CustomSnackBar {
     companion object {
 
         /**
