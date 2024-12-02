@@ -1,67 +1,70 @@
 package com.example.pomodojo.core.utils
 
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.viewinterop.AndroidView
-import com.google.android.material.snackbar.Snackbar
+import androidx.compose.ui.unit.dp
 import com.example.pomodojo.R
+import com.example.pomodojo.ui.theme.Error
+import com.example.pomodojo.ui.theme.Primary
 
 /**
- * Class that creates a custom ErrorSnackbar with a unique style.
+ * A composable function that displays an error snackbar with a main message and a sub-message.
+ *
+ * @param mainMessage The main error message to display.
+ * @param subMessage The sub-message providing additional context about the error.
  */
-class ErrorSnackBar {
-    companion object {
-
-        /**
-         * Displays an error Snackbar with a custom design.
-         *
-         * @param view The view to anchor the Snackbar.
-         * @param mainMessage The main error message to display.
-         * @param subMessage The secondary message providing additional context.
-         */
-        fun showErrorSnackBar(view: View, mainMessage: String, subMessage: String) {
-            val snackbar = Snackbar.make(view, "", Snackbar.LENGTH_LONG)
-
-            snackbar.view.setBackgroundColor(android.graphics.Color.TRANSPARENT)
-
-            val customView = LayoutInflater.from(view.context)
-                .inflate(R.layout.custom_snackbar_error, view.rootView as? ViewGroup, false).apply {
-                    findViewById<TextView>(R.id.snackbar_main_text).apply {
-                        text = mainMessage
-                        setTextColor(view.context.getColor(R.color.error))
-                    }
-                    findViewById<TextView>(R.id.snackbar_sub_text).apply {
-                        text = subMessage
-                        setTextColor(view.context.getColor(R.color.primary))
-                    }
-
-                    findViewById<ImageView>(R.id.snackbar_icon)
-                }
-
-            (snackbar.view as ViewGroup).removeAllViews()
-            (snackbar.view as ViewGroup).addView(customView)
-
-            snackbar.show()
+@Composable
+fun ErrorSnackBar(mainMessage: String, subMessage: String) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 48.dp, top = 16.dp, end = 16.dp, bottom = 16.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White, shape = RoundedCornerShape(16.dp))
+                .padding(start = 40.dp, top = 16.dp, end = 16.dp, bottom = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column {
+                Text(
+                    text = mainMessage,
+                    color = Error,
+                    style = androidx.compose.material3.MaterialTheme.typography.bodyLarge
+                )
+                Text(
+                    text = subMessage,
+                    color = Primary,
+                    style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
+                )
+            }
         }
+        Image(
+            painter = painterResource(id = R.drawable.ic_error),
+            contentDescription = null,
+            modifier = Modifier
+                .size(56.dp)
+                .align(Alignment.CenterStart)
+                .offset(x = (-32).dp)
+        )
     }
 }
 
-@Composable
-fun ErrorSnackBarPreview() {
-    AndroidView(factory = { context ->
-        val view = LayoutInflater.from(context).inflate(R.layout.activity_home, null) as ViewGroup
-        ErrorSnackBar.showErrorSnackBar(view, "Error occurred", "Please try again")
-        view
-    })
-}
-
+/**
+ * A preview composable function to display the ErrorSnackBar in the Android Studio preview.
+ */
 @Preview(showBackground = true)
 @Composable
 fun PreviewErrorSnackBar() {
-    ErrorSnackBarPreview()
+    ErrorSnackBar(mainMessage = "Error occurred", subMessage = "Please try again")
 }

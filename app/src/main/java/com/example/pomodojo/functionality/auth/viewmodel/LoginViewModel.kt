@@ -1,15 +1,14 @@
-@file:Suppress("DEPRECATION")
-
 package com.example.pomodojo.functionality.auth.viewmodel
 
 import android.app.Application
 import android.content.Intent
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.pomodojo.R
 import com.example.pomodojo.core.utils.ErrorSnackBar
-import com.example.pomodojo.core.utils.CustomSnackBar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -21,7 +20,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
  *
  * @param application The application context.
  */
-@Suppress("DEPRECATION", "INFERRED_TYPE_VARIABLE_INTO_EMPTY_INTERSECTION_WARNING")
 class LoginViewModel(application: Application) : AndroidViewModel(application) {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
@@ -36,6 +34,9 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _googleSignInIntent = MutableLiveData<Intent>()
     val googleSignInIntent: LiveData<Intent> = _googleSignInIntent
+
+    private val _errorMessage = MutableLiveData<Pair<String, String>>()
+    val errorMessage: LiveData<Pair<String, String>> = _errorMessage
 
     /**
      * Initiates the Google login process by creating a sign-in intent.
@@ -62,6 +63,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun handleGoogleSignInResult(account: GoogleSignInAccount?) {
         if (account == null) {
+            _errorMessage.postValue(Pair("Error", "Google sign-in failed."))
             return
         }
 
@@ -78,7 +80,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                         _navigateToHome.postValue(Unit)
                     }
                 } else {
-                    ErrorSnackBar.showErrorSnackBar(getApplication(), "Error", task.exception?.localizedMessage ?: "Unknown error")
+                    _errorMessage.postValue(Pair("Error", task.exception?.localizedMessage ?: "Unknown error"))
                 }
             }
     }
@@ -90,16 +92,16 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun forgotPassword(email: String) {
         if (email.isEmpty()) {
-            ErrorSnackBar.showErrorSnackBar(getApplication(), "Error", "Please enter your email address.")
+            _errorMessage.postValue(Pair("Error", "Please enter your email address."))
             return
         }
 
         auth.sendPasswordResetEmail(email)
             .addOnCompleteListener { sent ->
                 if (sent.isSuccessful) {
-                    CustomSnackBar.showSnackBar(getApplication(), "Success", "Password reset email sent.")
+                    _errorMessage.postValue(Pair("Success", "Password reset email sent."))
                 } else {
-                    ErrorSnackBar.showErrorSnackBar(getApplication(), "Error", "Error in sending reset email.")
+                    _errorMessage.postValue(Pair("Error", "Error in sending reset email."))
                 }
             }
     }
@@ -112,7 +114,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun loginUser(email: String, password: String) {
         if (email.isBlank() || password.isBlank()) {
-            ErrorSnackBar.showErrorSnackBar(getApplication(), "Error", "Email and password cannot be empty.")
+            _errorMessage.postValue(Pair("Error", "Email and password cannot be empty."))
             return
         }
 
@@ -121,7 +123,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                 if (login.isSuccessful) {
                     _navigateToHome.postValue(Unit)
                 } else {
-                    ErrorSnackBar.showErrorSnackBar(getApplication(), "Error", "Authentication failed: ${login.exception?.localizedMessage}")
+                    _errorMessage.postValue(Pair("Error", "Authentication failed: ${login.exception?.localizedMessage}"))
                 }
             }
     }
@@ -133,3 +135,4 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
         _navigateToSignUp.postValue(Unit)
     }
 }
+

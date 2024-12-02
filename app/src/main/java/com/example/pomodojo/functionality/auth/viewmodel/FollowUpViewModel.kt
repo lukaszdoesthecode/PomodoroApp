@@ -4,7 +4,6 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.pomodojo.core.utils.ErrorSnackBar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -18,6 +17,9 @@ class FollowUpViewModel(application: Application) : AndroidViewModel(application
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val _navigateToHome = MutableLiveData<Unit>()
     val navigateToHome: LiveData<Unit> = _navigateToHome
+
+    private val _errorMessage = MutableLiveData<Pair<String, String>>()
+    val errorMessage: LiveData<Pair<String, String>> = _errorMessage
 
     /**
      * Completes the user information by saving it to Firestore.
@@ -46,7 +48,7 @@ class FollowUpViewModel(application: Application) : AndroidViewModel(application
                     _navigateToHome.postValue(Unit)
                 }
                 .addOnFailureListener { _ ->
-                    ErrorSnackBar.showErrorSnackBar(getApplication(), "Error", "Error while saving information.")
+                    _errorMessage.postValue(Pair("Error", "Error while saving information."))
                 }
         }
     }

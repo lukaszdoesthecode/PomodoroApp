@@ -4,7 +4,6 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.pomodojo.core.utils.ErrorSnackBar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -13,12 +12,14 @@ import com.google.firebase.firestore.FirebaseFirestore
  *
  * @param application The application context.
  */
-@Suppress("INFERRED_TYPE_VARIABLE_INTO_EMPTY_INTERSECTION_WARNING")
 class SignUpViewModel(application: Application) : AndroidViewModel(application) {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val _navigateToLogIn = MutableLiveData<Unit>()
     val navigateToLogIn: LiveData<Unit> = _navigateToLogIn
+
+    private val _errorMessage = MutableLiveData<Pair<String, String>>()
+    val errorMessage: LiveData<Pair<String, String>> = _errorMessage
 
     /**
      * Creates a new user account with the provided information and saves it to Firestore.
@@ -51,13 +52,13 @@ class SignUpViewModel(application: Application) : AndroidViewModel(application) 
                                 _navigateToLogIn.postValue(Unit)
                             }
                             .addOnFailureListener { _ ->
-                                ErrorSnackBar.showErrorSnackBar(getApplication(), "Error", "Error while saving user information.")
+                                _errorMessage.postValue(Pair("Error", "Error while saving user information."))
                             }
                     } else {
-                        ErrorSnackBar.showErrorSnackBar(getApplication(), "Error", "Error while creating account.")
+                        _errorMessage.postValue(Pair("Error", "Error while creating account."))
                     }
                 } else {
-                    ErrorSnackBar.showErrorSnackBar(getApplication(), "Error", "Error while authenticating.")
+                    _errorMessage.postValue(Pair("Error", "Error while authenticating."))
                 }
             }
     }
