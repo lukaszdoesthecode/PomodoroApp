@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "375853191716",
+    "project_id": "pomodojo-fd26d",
+    "storage_bucket": "pomodojo-fd26d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:375853191716:android:a13d43d2cb817060803eb1",
+        "android_client_info": {
+          "package_name": "com.example.pomodojo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "375853191716-vdk741l81na1be373nsmmhnj1ga2m1ij.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.pomodojo",
+            "certificate_hash": "6614e450705883c47d0412a2fb5d4c789bdabe5b"
+          }
+        },
+        {
+          "client_id": "375853191716-gjfsnfo600ski63bog84gkdcbfjjnr4n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUGgdtinHkEo1EzoIKUZ_JsNGGrT8OPOI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "375853191716-gjfsnfo600ski63bog84gkdcbfjjnr4n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
