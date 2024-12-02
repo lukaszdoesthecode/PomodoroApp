@@ -5,6 +5,6 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SummaryActivity">
+    tools:context=".functionality.pomodoro.ui.SummaryActivity">
 
 </androidx.constraintlayout.widget.ConstraintLayout>
