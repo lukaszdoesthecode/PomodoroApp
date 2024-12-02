@@ -7,6 +7,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,6 +22,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.pomodojo.R
 import com.example.pomodojo.functionality.dashboard.viewmodel.HomeViewModel
 import com.example.pomodojo.ui.theme.PomodojoTheme
+import com.example.pomodojo.core.utils.ErrorSnackBar
 
 /**
  * Composable function that displays the main screen of the application.
@@ -33,6 +35,8 @@ fun MainScreen(
     viewModel: HomeViewModel = viewModel(),
     backgroundColor: Color = colorResource(R.color.primary)
 ) {
+    val errorMessage by viewModel.errorMessage.observeAsState()
+
     Scaffold(
         bottomBar = { BottomNavigationBar() }
     ) { padding ->
@@ -182,6 +186,10 @@ fun MainScreen(
             }
 
             Spacer(modifier = Modifier.height(24.dp))
+        }
+
+        errorMessage?.let { (mainMessage, subMessage) ->
+            ErrorSnackBar(mainMessage = mainMessage, subMessage = subMessage)
         }
     }
 }
