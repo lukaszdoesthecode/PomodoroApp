@@ -2,10 +2,17 @@
 
 package com.example.pomodojo.core.utils
 
+import android.annotation.SuppressLint
 import android.view.View
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.ComposeView
+import androidx.lifecycle.lifecycleScope
 import com.example.pomodojo.R
 import com.google.android.material.textfield.TextInputLayout
+import kotlinx.coroutines.launch
 import java.util.Calendar
 
 /**
@@ -142,7 +149,7 @@ object ErrorHandler {
      */
     @Composable
     fun showSuccessMessage(view: View, mainMessage: String, subMessage: String) {
-        ErrorSnackBar(mainMessage, subMessage)
+        showSnackbar(view, mainMessage, subMessage)
     }
 
     /**
@@ -152,10 +159,7 @@ object ErrorHandler {
      */
     @Composable
     fun showPasswordResetSuccess(view: View) {
-        ErrorSnackBar(
-            mainMessage = "Password Reset Email Sent",
-            subMessage = "Check your email to reset your password"
-        )
+        showSnackbar(view, "Password Reset Email Sent", "Check your email to reset your password")
     }
 
     /**
@@ -165,10 +169,7 @@ object ErrorHandler {
      */
     @Composable
     fun showPasswordResetFailedError(view: View) {
-        ErrorSnackBar(
-            mainMessage = "Reset Email Failed",
-            subMessage = "There was an error sending the reset email. Please try again."
-        )
+        showSnackbar(view, "Reset Email Failed", "There was an error sending the reset email. Please try again.")
     }
 
     /**
@@ -178,10 +179,7 @@ object ErrorHandler {
      */
     @Composable
     fun showGoogleSignInFailedError(view: View) {
-        ErrorSnackBar(
-            mainMessage = "Google Sign-In Failed",
-            subMessage = "There was an error during Google sign-in. Please try again."
-        )
+        showSnackbar(view, "Google Sign-In Failed", "There was an error during Google sign-in. Please try again.")
     }
 
     /**
@@ -191,10 +189,7 @@ object ErrorHandler {
      */
     @Composable
     fun showGoogleAuthenticationFailedError(view: View) {
-        ErrorSnackBar(
-            mainMessage = "Google Authentication Failed",
-            subMessage = "Failed to authenticate with Google. Please try again."
-        )
+        showSnackbar(view, "Google Authentication Failed", "Failed to authenticate with Google. Please try again.")
     }
 
     /**
@@ -204,10 +199,7 @@ object ErrorHandler {
      */
     @Composable
     fun showAuthenticationFailedError(view: View) {
-        ErrorSnackBar(
-            mainMessage = "Authentication Failed",
-            subMessage = "Please check your credentials and try again"
-        )
+        showSnackbar(view, "Authentication Failed", "Please check your credentials and try again")
     }
 
     /**
@@ -219,7 +211,7 @@ object ErrorHandler {
      */
     @Composable
     fun showInitializationError(view: View, mainMessage: String, subMessage: String) {
-        ErrorSnackBar(mainMessage, subMessage)
+        showSnackbar(view, mainMessage, subMessage)
     }
 
     /**
@@ -231,10 +223,7 @@ object ErrorHandler {
      */
     @Composable
     fun showMissingFieldError(view: View, fieldName: String, layout: TextInputLayout) {
-        ErrorSnackBar(
-            mainMessage = "Missing Information",
-            subMessage = "Please fill out your $fieldName information"
-        )
+        showSnackbar(view, "Missing Information", "Please fill out your $fieldName information")
         layout.boxStrokeColor = view.context.resources.getColor(R.color.error)
     }
 
@@ -247,7 +236,7 @@ object ErrorHandler {
      */
     @Composable
     fun showGeneralError(view: View, mainMessage: String, subMessage: String) {
-        ErrorSnackBar(mainMessage, subMessage)
+        showSnackbar(view, mainMessage, subMessage)
     }
 
     /**
@@ -259,13 +248,32 @@ object ErrorHandler {
      */
     @Composable
     private fun showError(view: View, layout: TextInputLayout, message: String) {
-        ErrorSnackBar(mainMessage = "Input Error", subMessage = message)
+        showSnackbar(view, "Input Error", message)
         layout.boxStrokeColor = layout.context.resources.getColor(R.color.error)
     }
 
     @Composable
     fun showErrorMessage(view: View, mainMessage: String, subMessage: String) {
         val parentView = view.rootView.findViewById<View>(android.R.id.content)
-        ErrorSnackBar(mainMessage, subMessage)
+        showSnackbar(parentView, mainMessage, subMessage)
+    }
+
+    /**
+     * Displays a Snackbar using Compose.
+     *
+     * @param view The view to anchor the Snackbar.
+     * @param mainMessage The primary message describing the error.
+     * @param subMessage The additional message describing further details.
+     */
+    @SuppressLint("CoroutineCreationDuringComposition")
+    @Composable
+    private fun showSnackbar(view: View, mainMessage: String, subMessage: String) {
+        val snackbarHostState = remember { SnackbarHostState() }
+        (view as? ComposeView)?.setContent {
+            SnackbarHost(hostState = snackbarHostState)
+        }
+        (view.context as? androidx.fragment.app.FragmentActivity)?.lifecycleScope?.launch {
+            snackbarHostState.showSnackbar("$mainMessage: $subMessage")
+        }
     }
 }
