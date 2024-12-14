@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,6 +30,7 @@ fun FollowUpScreen(viewModel: FollowUpViewModel = viewModel()) {
     var nameError by remember { mutableStateOf(false) }
     var dobError by remember { mutableStateOf(false) }
 
+    val currentView = LocalView.current
 
     val validateName = { input: String ->
         nameError = input.trim().split(" ").size < 2
@@ -53,23 +55,24 @@ fun FollowUpScreen(viewModel: FollowUpViewModel = viewModel()) {
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .background(color = Primary),
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.SpaceEvenly, // Distribute items evenly
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Spacer(modifier = Modifier.height(16.dp))
+
         Text(
             text = "Help Us Complete Your Account!",
             color = White,
             fontSize = 22.sp,
-        )
-        HorizontalDivider(
-            modifier = Modifier
-                .weight(1f)
-                .height(2.dp)
-                .padding(start = 16.dp),
-            color = Color.White
+            modifier = Modifier.padding(top = 32.dp) // Add padding to move it lower
         )
 
-        Spacer(modifier = Modifier.height(48.dp))
+        HorizontalDivider(
+            modifier = Modifier
+                .height(2.dp)
+                .padding(start = 16.dp, end = 16.dp),
+            color = Color.White
+        )
 
         InputField(
             label = "Full Name",
@@ -82,9 +85,6 @@ fun FollowUpScreen(viewModel: FollowUpViewModel = viewModel()) {
             errorMessage = if (nameError) "Please enter first and last name" else null
         )
 
-
-        Spacer(modifier = Modifier.height(16.dp))
-
         InputField(
             label = "Date of Birth (dd/MM/yyyy)",
             value = dob,
@@ -96,18 +96,14 @@ fun FollowUpScreen(viewModel: FollowUpViewModel = viewModel()) {
             errorMessage = "Invalid Date of Birth"
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-
         Button(
             onClick = {
                 if (name.isNotBlank() && email.isNotBlank() && !dobError) {
-                    viewModel.completeInformation(name, dob, email)
+                    viewModel.completeInformation(name, dob, email, currentView)
                 }
             },
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
+                .fillMaxWidth(0.8f) // Slightly narrow width
                 .height(48.dp),
             shape = RectangleShape,
             colors = ButtonDefaults.buttonColors(containerColor = Error)
@@ -116,8 +112,8 @@ fun FollowUpScreen(viewModel: FollowUpViewModel = viewModel()) {
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-    }}
-
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
@@ -126,4 +122,3 @@ fun FollowUpScreenPreview() {
         FollowUpScreen()
     }
 }
-

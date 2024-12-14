@@ -25,6 +25,7 @@ import com.example.pomodojo.R
 import com.example.pomodojo.auth.ui.theme.*
 import com.example.pomodojo.auth.viewmodels.SignUpViewModel
 import java.text.SimpleDateFormat
+import androidx.compose.ui.platform.LocalView
 import java.util.*
 
 @Composable
@@ -42,6 +43,8 @@ fun SignUpScreen(viewModel: SignUpViewModel = viewModel()) {
 
     var passwordVisible by remember { mutableStateOf(false) }
     var repeatPasswordVisible by remember { mutableStateOf(false) }
+
+    val currentView = LocalView.current
 
     val validateName = { input: String ->
         nameError = input.trim().split(" ").size < 2
@@ -195,7 +198,7 @@ fun SignUpScreen(viewModel: SignUpViewModel = viewModel()) {
         Button(
             onClick = {
                 if (name.isNotBlank() && email.isNotBlank() && !dobError && !passwordError && !repeatPasswordError) {
-                    viewModel.createAnAccount(name, dob, email, password)
+                    viewModel.createAnAccount(name, dob, email, password, currentView )
                 }
             },
             modifier = Modifier

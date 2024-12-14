@@ -4,6 +4,7 @@ package com.example.pomodojo.auth.viewmodels
 
 import android.app.Application
 import android.content.Intent
+import android.view.View
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -15,8 +16,10 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.google.firebase.firestore.FirebaseFirestore
 
-@Suppress("DEPRECATION", "INFERRED_TYPE_VARIABLE_INTO_EMPTY_INTERSECTION_WARNING")
+@Suppress("DEPRECATION")
 class LoginViewModel(application: Application) : AndroidViewModel(application) {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
@@ -48,7 +51,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
     }
 
 
-    fun handleGoogleSignInResult(account: GoogleSignInAccount?) {
+    fun handleGoogleSignInResult(account: GoogleSignInAccount?, view: View) {
         if (account == null) {
             return
         }
@@ -66,29 +69,44 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                         _navigateToHome.postValue(Unit)
                     }
                 } else {
-                    ErrorSnackBar.showErrorSnackBar(getApplication(), "Error",task.exception?.localizedMessage ?: "Unknown error")
+                    showError(view, task.exception?.localizedMessage ?: "Unknown error")
+
                 }
             }
     }
 
-    fun forgotPassword(email: String) {
+    fun forgotPassword(email: String, view: View) {
         if (email.isEmpty()) {
-            ErrorSnackBar.showErrorSnackBar(getApplication(), "Error","Please enter your email address.")
+            showError(view, "Please enter your email address.")
+
             return
         }
 
-        auth.sendPasswordResetEmail(email)
-            .addOnCompleteListener { sent ->
-                if (sent.isSuccessful) {
-                      SnackBar.showSnackBar(getApplication(), "Success","Password reset email sent.")
+        val db = FirebaseFirestore.getInstance()
+        db.collection("users")
+            .whereEqualTo("email", email)
+            .get()
+            .addOnSuccessListener { documents ->
+                if (!documents.isEmpty) {
+                    auth.sendPasswordResetEmail(email)
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                showSuccess(view, "Password reset email sent.")
+                            } else {
+                                showError(view, "Error in sending reset email. Please try again.")
+                            }
+                        }
                 } else {
-                    ErrorSnackBar.showErrorSnackBar(getApplication(), "Error","Error in sending reset email.")
+                    showError(view, "No account found with this email address.")
                 }
             }
+            .addOnFailureListener { exception ->
+                showError(view, "Failed to check email existence: ${exception.message}")
+            }
     }
-    fun loginUser(email: String, password: String) {
+    fun loginUser(email: String, password: String, view: View) {
         if (email.isBlank() || password.isBlank()) {
-            ErrorSnackBar.showErrorSnackBar(getApplication(), "Error.","Email and password cannot be empty.")
+            showError(view, "Email and password cannot be empty.")
             return
         }
 
@@ -97,9 +115,17 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                 if (login.isSuccessful) {
                     _navigateToHome.postValue(Unit)
                 } else {
-                    ErrorSnackBar.showErrorSnackBar(getApplication(), "Error","Authentication failed: ${login.exception?.localizedMessage}")
+                    showError(view, "Authentication failed: ${login.exception?.localizedMessage}")
                 }
             }
+    }
+
+    private fun showError(view: View, message: String) {
+        ErrorSnackBar.showErrorSnackBar(view, "Error", message)
+    }
+
+    private fun showSuccess(view: View, message: String) {
+        SnackBar.showSnackBar(view, "Success", message)
     }
 
     fun navigateToSignUp() {

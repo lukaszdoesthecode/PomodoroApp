@@ -1,6 +1,7 @@
 package com.example.pomodojo.auth.viewmodels
 
 import android.app.Application
+import android.view.View
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -15,7 +16,7 @@ class FollowUpViewModel(application: Application) : AndroidViewModel(application
     private val _navigateToHome = MutableLiveData<Unit>()
     val navigateToHome: LiveData<Unit> = _navigateToHome
 
-    fun completeInformation(fullName: String, dob: String, email: String) {
+    fun completeInformation(fullName: String, dob: String, email: String, view: View) {
         val nameParts = fullName.trim().split(" ")
         val name = nameParts.first()
         val surname = nameParts.drop(1).joinToString(" ")
@@ -35,9 +36,13 @@ class FollowUpViewModel(application: Application) : AndroidViewModel(application
                     _navigateToHome.postValue(Unit)
                 }
                 .addOnFailureListener { _ ->
-                    ErrorSnackBar.showErrorSnackBar(getApplication(), "Error","Error while saving information.")
+                    showError(view, "Error while saving information.")
                 }
         }
+    }
+
+    private fun showError(view: View, message: String) {
+        ErrorSnackBar.showErrorSnackBar(view, "Error", message)
     }
 
 }

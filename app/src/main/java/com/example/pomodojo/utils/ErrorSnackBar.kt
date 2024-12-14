@@ -37,7 +37,7 @@ class ErrorSnackBar {
                         setTextColor(view.context.getColor(R.color.primary))
                     }
 
-                    findViewById<ImageView>(R.id.snackbar_icon)
+                    findViewById<ImageView>(R.id.snackbar_icon) // Optional: Add logic for setting an icon
                 }
 
             (snackbar.view as ViewGroup).removeAllViews()

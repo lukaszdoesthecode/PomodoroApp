@@ -4,6 +4,7 @@ package com.example.pomodojo.auth.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -21,8 +22,10 @@ class LoginActivity : ComponentActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
             try {
+
                 val account = task.getResult(ApiException::class.java)
-                viewModel.handleGoogleSignInResult(account)
+                val rootView = findViewById<View>(android.R.id.content)
+                viewModel.handleGoogleSignInResult(account, rootView)
             } catch (e: ApiException) {
                 e.printStackTrace()
             }

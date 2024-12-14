@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -34,6 +35,9 @@ fun LoginScreen(viewModel: LoginViewModel = viewModel()) {
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     var passwordError by remember { mutableStateOf(false) }
+
+    val currentView = LocalView.current
+
 
     Column(
         modifier = Modifier
@@ -122,7 +126,7 @@ fun LoginScreen(viewModel: LoginViewModel = viewModel()) {
             modifier = Modifier
                 .padding(16.dp)
                 .align(Alignment.End)
-                .clickable(onClick = { viewModel.forgotPassword(email) }),
+                .clickable(onClick = { viewModel.forgotPassword(email, currentView) }),
             textAlign = TextAlign.End
         )
 
@@ -132,7 +136,7 @@ fun LoginScreen(viewModel: LoginViewModel = viewModel()) {
             onClick = {
                 passwordError = password.isBlank()
                 if (email.isNotBlank() && password.isNotBlank()) {
-                    viewModel.loginUser(email, password)
+                    viewModel.loginUser(email, password, currentView)
                 }
             },
             modifier = Modifier

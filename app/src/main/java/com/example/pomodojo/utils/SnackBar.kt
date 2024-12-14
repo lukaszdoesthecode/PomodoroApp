@@ -15,10 +15,10 @@ class SnackBar {
     companion object {
 
         /**
-         * Displays an error Snackbar with a custom design.
+         * Displays a custom Snackbar with a custom design.
          *
          * @param view The view to anchor the Snackbar.
-         * @param mainMessage The main error message to display.
+         * @param mainMessage The main message to display.
          * @param subMessage The secondary message providing additional context.
          */
         fun showSnackBar(view: View, mainMessage: String, subMessage: String) {
@@ -27,7 +27,7 @@ class SnackBar {
             snackbar.view.setBackgroundColor(android.graphics.Color.TRANSPARENT)
 
             val customView = LayoutInflater.from(view.context)
-                .inflate(R.layout.custom_snackbar_error, view.rootView as? ViewGroup, false).apply {
+                .inflate(R.layout.custom_snackbar_accept, view.rootView as? ViewGroup, false).apply {
                     findViewById<TextView>(R.id.snackbar_main_text).apply {
                         text = mainMessage
                         setTextColor(view.context.getColor(R.color.accentD))
