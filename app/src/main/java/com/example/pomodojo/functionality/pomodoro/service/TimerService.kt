@@ -81,11 +81,7 @@ class TimerService : Service() {
     override fun onCreate() {
         super.onCreate()
         sharedPref = getSharedPreferences("myPrefs", MODE_PRIVATE)
-        sessionTimeMap = mapOf(
-            SessionState.WORK to sharedPref.getInt("work_duration", 1500),
-            SessionState.SHORT_BREAK to sharedPref.getInt("short_break_duration", 300),
-            SessionState.LONG_BREAK to sharedPref.getInt("long_break_duration", 900)
-        )
+
     }
 
     private suspend fun makeToastAsync(message: String) {
@@ -184,6 +180,11 @@ class TimerService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        sessionTimeMap = mapOf(
+            SessionState.WORK to sharedPref.getInt("work_duration", 1500),
+            SessionState.SHORT_BREAK to sharedPref.getInt("short_break_duration", 300),
+            SessionState.LONG_BREAK to sharedPref.getInt("long_break_duration", 900)
+        )
         initSessionState()
 
         performMainWorkJob = serviceScope.launch {

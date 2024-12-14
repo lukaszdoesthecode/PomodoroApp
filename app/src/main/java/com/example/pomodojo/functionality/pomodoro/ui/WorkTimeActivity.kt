@@ -124,6 +124,11 @@ class WorkTimeActivity : ComponentActivity() {
         createSharedPrefs()
         enableEdgeToEdge()
 
+        checkAndRequestNotificationPermission()
+        tryToBindToServiceIfRunning()
+        if (!restoreSessionStateSharedPrefs()) {
+            //showGeneralError("Error", "Failed to restore session state.")
+        }
         setContent {
             PomodojoTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -138,11 +143,7 @@ class WorkTimeActivity : ComponentActivity() {
             }
         }
         Log.d(TAG, "onCreate WorkTimeActivity")
-        checkAndRequestNotificationPermission()
-        tryToBindToServiceIfRunning()
-        if (!restoreSessionStateSharedPrefs()) {
-            //showGeneralError("Error", "Failed to restore session state.")
-        }
+
     }
 
     override fun onDestroy() {
