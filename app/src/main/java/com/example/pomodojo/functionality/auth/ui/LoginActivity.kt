@@ -50,6 +50,9 @@ class LoginActivity : ComponentActivity() {
                 }
             }
         }
+
+        startActivity(Intent(this@LoginActivity, HomeActivity::class.java))
+        finish()
     }
 
     /**

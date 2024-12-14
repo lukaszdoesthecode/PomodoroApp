@@ -36,6 +36,9 @@ class TimerService : Service() {
     private val serviceScope = CoroutineScope(Dispatchers.IO + Job())
     val _sessionStatusFlow = MutableStateFlow(SessionState.WORK)
     val sessionStatusFlow: StateFlow<SessionState> get() = _sessionStatusFlow
+    val _timerRunning = MutableStateFlow(false)
+    val timerRunningFlow: StateFlow<Boolean> get() = _timerRunning
+
     private var performMainWorkJob: Job? = null
     private lateinit var sharedPref: SharedPreferences
 
@@ -100,24 +103,24 @@ class TimerService : Service() {
         return String.format("%02d:%02d", minutes, seconds)
     }
 
-    private suspend fun performMainWork() {
-        withContext(Dispatchers.Main) {
-            performMainWorkLogic(
-                timeFlow = timeFlow,
-                sessionSequence = sessionSequence,
-                currentSessionIndex = currentSessionIndex,
-                sessionStatusFlow = sessionStatusFlow,
-                updateTime = { newTime -> updateTime(newTime) },
-                updateNotification = { title, text -> updateNotification(title, text) },
-                changeSessionState = { changeSessionStateNonComposable() },
-                makeToastAsync = { message -> makeToastAsync(message) },
-                stopForeground = { stopForeground(STOP_FOREGROUND_REMOVE) },
-                stopSelf = { stopSelf() }
-            )
-        }
-    }
+//    private suspend fun performMainWork() {
+//        withContext(Dispatchers.Main) {
+//            performMainWorkLogic(
+//                timeFlow = timeFlow,
+//                sessionSequence = sessionSequence,
+//                currentSessionIndex = currentSessionIndex,
+//                sessionStatusFlow = sessionStatusFlow,
+//                updateTime = { newTime -> updateTime(newTime) },
+//                updateNotification = { title, text -> updateNotification(title, text) },
+//                changeSessionState = { changeSessionStateNonComposable() },
+//                makeToastAsync = { message -> makeToastAsync(message) },
+//                stopForeground = { stopForeground(STOP_FOREGROUND_REMOVE) },
+//                stopSelf = { stopSelf() }
+//            )
+//        }
+//    }
 
-    private fun performMainWorkLogic(
+    private suspend fun performMainWorkLogic(
         timeFlow: StateFlow<Int>,
         sessionSequence: List<SessionState>,
         currentSessionIndex: Int,
@@ -126,10 +129,10 @@ class TimerService : Service() {
         updateNotification: (String, String) -> Unit,
         changeSessionState: () -> Unit,
         makeToastAsync: suspend (String) -> Unit,
-        stopForeground: () -> Unit,
-        stopSelf: () -> Unit
+        stop: () -> Unit
     ) {
-        CoroutineScope(Dispatchers.Main).launch {
+        //CoroutineScope(Dispatchers.Main).launch {
+            _timerRunning.value = true
             while (timeFlow.value > 0) {
                 delay(1000)
                 updateTime(timeFlow.value - 1)
@@ -148,12 +151,10 @@ class TimerService : Service() {
                             )
                         }"
                     )
+           //     }
                 }
-            }
-
-            stopForeground()
-            stopSelf()
-        }
+          }
+        stop()
     }
 
     private fun getSessionStateStringNonComposable(sessionState: SessionState): String {
@@ -186,7 +187,17 @@ class TimerService : Service() {
         initSessionState()
 
         performMainWorkJob = serviceScope.launch {
-            performMainWork()
+            performMainWorkLogic(
+                timeFlow = timeFlow,
+                sessionSequence = sessionSequence,
+                currentSessionIndex = currentSessionIndex,
+                sessionStatusFlow = sessionStatusFlow,
+                updateTime = { newTime -> updateTime(newTime) },
+                updateNotification = { title, text -> updateNotification(title, text) },
+                changeSessionState = { changeSessionStateNonComposable() },
+                makeToastAsync = { message -> makeToastAsync(message) },
+                stop = { stopForegroundService()},
+            )
         }
 
         // create the notification channel
@@ -216,6 +227,7 @@ class TimerService : Service() {
     }
 
     fun stopForegroundService() {
+        _timerRunning.value = false
         performMainWorkJob?.cancel()
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()

@@ -46,6 +46,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.pomodojo.functionality.pomodoro.state.SessionState
 import com.example.pomodojo.functionality.pomodoro.service.TimerService
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import androidx.compose.material.icons.filled.MoreVert
@@ -85,16 +86,18 @@ class WorkTimeActivity : ComponentActivity() {
 
             val combinedFlow = combine(
                 timerService?.timeFlow ?: flowOf(),
-                timerService?.sessionStatusFlow ?: flowOf()
-            ) { time, sessionStatus ->
-                Pair(time, sessionStatus)
+                timerService?.sessionStatusFlow ?: flowOf(),
+                timerService?.timerRunningFlow ?: flowOf()
+            ) { time, sessionStatus, timerRunning ->
+                Triple(time, sessionStatus, timerRunning)
             }
 
             // Collect the combined flow
             lifecycleScope.launch {
-                combinedFlow.collect { (newTime, newSessionStatus) ->
+                combinedFlow.collect { (newTime, newSessionStatus, newTimerRunning) ->
                     time = newTime
                     sessionState = newSessionStatus
+                    timerRunning = newTimerRunning
                 }
             }
         }
@@ -120,6 +123,7 @@ class WorkTimeActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         createSharedPrefs()
         enableEdgeToEdge()
+
         setContent {
             PomodojoTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -135,6 +139,7 @@ class WorkTimeActivity : ComponentActivity() {
         }
         Log.d(TAG, "onCreate WorkTimeActivity")
         checkAndRequestNotificationPermission()
+        tryToBindToServiceIfRunning()
         if (!restoreSessionStateSharedPrefs()) {
             //showGeneralError("Error", "Failed to restore session state.")
         }
@@ -143,7 +148,7 @@ class WorkTimeActivity : ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
         if (timerService != null) {
-            unbindService(connection)
+            //unbindService(connection)
         }
         //unbindService(connection)
     }
