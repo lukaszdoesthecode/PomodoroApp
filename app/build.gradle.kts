@@ -108,7 +108,8 @@ dependencies {
 
     // Spotify integration
     implementation ("com.spotify.android:auth:1.2.5")
-    implementation ("com.squareup.okhttp3:okhttp:4.10.0")
+    implementation ("com.squareup.okhttp3:okhttp:4.11.0")
+
 
 
 }

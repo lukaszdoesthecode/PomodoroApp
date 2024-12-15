@@ -19,7 +19,6 @@ import com.google.mlkit.vision.face.FaceDetectorOptions
 import okhttp3.*
 import org.json.JSONObject
 import java.io.IOException
-import java.util.*
 
 class FaceScan : AppCompatActivity() {
 
@@ -30,7 +29,6 @@ class FaceScan : AppCompatActivity() {
     private val clientId = "2cec84f1e66042ccb6ad5336208f31d4"
     private val clientSecret = "8fd83354b1824cf7b2c6f55cc11188ff"
     private val redirectUri = "myapp://callback"
-    private val authEndpoint = "https://accounts.spotify.com/authorize"
     private val tokenEndpoint = "https://accounts.spotify.com/api/token"
     private var accessToken: String? = null
 
@@ -54,12 +52,7 @@ class FaceScan : AppCompatActivity() {
     private val cameraLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
-                val capturedImage: Bitmap? = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-                    result.data?.extras?.getParcelable("data", Bitmap::class.java)
-                } else {
-                    @Suppress("DEPRECATION")
-                    result.data?.extras?.getParcelable("data")
-                }
+                val capturedImage: Bitmap? = result.data?.extras?.getParcelable("data")
                 capturedImage?.let {
                     imageView.setImageBitmap(it)
                     bitmap = it
@@ -101,7 +94,6 @@ class FaceScan : AppCompatActivity() {
     private fun detectFaces(bitmap: Bitmap) {
         val options = FaceDetectorOptions.Builder()
             .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE)
-            .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_NONE)
             .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_ALL)
             .build()
 
@@ -123,26 +115,17 @@ class FaceScan : AppCompatActivity() {
 
                         textView.text = "Emotion Detected: $emotion"
 
-                        authenticateSpotify()
+                        val intent = Intent(this, SpotifyPlaylist::class.java)
+                        intent.putExtra("DETECTED_EMOTION", emotion)
+                        startActivity(intent)
+
+                        finish()
                     }
                 }
             }
             .addOnFailureListener { e ->
                 Toast.makeText(this, "Face detection failed: ${e.message}", Toast.LENGTH_LONG).show()
             }
-    }
-
-    private fun authenticateSpotify() {
-        val state = UUID.randomUUID().toString()
-        val authUrl = "$authEndpoint?" +
-                "client_id=$clientId&" +
-                "response_type=code&" +
-                "redirect_uri=$redirectUri&" +
-                "scope=user-read-private%20playlist-read-private&" +
-                "state=$state"
-
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(authUrl))
-        startActivity(intent)
     }
 
     private fun handleRedirect() {
@@ -188,13 +171,8 @@ class FaceScan : AppCompatActivity() {
                     val responseBody = response.body?.string()
                     val json = JSONObject(responseBody ?: "")
                     accessToken = json.getString("access_token")
-
                     runOnUiThread {
-                        Toast.makeText(this@FaceScan, "Spotify connected successfully!", Toast.LENGTH_SHORT).show()
-                    }
-                } else {
-                    runOnUiThread {
-                        Toast.makeText(this@FaceScan, "Token exchange failed", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@FaceScan, "Spotify connected!", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
