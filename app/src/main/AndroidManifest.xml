@@ -22,6 +22,7 @@
         <activity
             android:name=".functionality.auth.ui.SignUpActivity"
             android:exported="false" />
+        <activity android:name=".functionality.pomodoro.ui.ShortBreakActivity" />
         <activity
             android:name=".functionality.auth.ui.LoginActivity"
             android:exported="true">
