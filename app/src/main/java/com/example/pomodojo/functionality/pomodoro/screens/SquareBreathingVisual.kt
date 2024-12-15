@@ -3,8 +3,12 @@ package com.example.pomodojo.functionality.pomodoro.screens
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -14,6 +18,9 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -21,6 +28,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pomodojo.ui.theme.PomodojoTheme
 import com.example.pomodojo.ui.theme.Primary
+import com.example.pomodojo.ui.theme.White
+import com.example.pomodojo.ui.theme.AccentL
+import android.content.Context
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+
+
 
 @Composable
 fun SquareBreathingVisual(isPaused: Boolean) {
@@ -63,38 +81,116 @@ fun SquareBreathingVisual(isPaused: Boolean) {
 @Composable
 fun BreathingSquare(progress: Float) {
     val squareSize = 250.dp
+    val density = LocalDensity.current
+    val buttonSize = 64.dp // Button size
 
-    Canvas(modifier = Modifier.size(squareSize)) {
-        val pathLength = size.width * 4  // Total path around the square
-        val strokeWidth = 4.dp.toPx()
+    // Modern vibration handling
+    val context = LocalContext.current
+    val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? android.os.VibratorManager
+        vibratorManager?.defaultVibrator
+    } else {
+        @Suppress("DEPRECATION")
+        context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
+    }
 
-        // Square with rounded corners
-        drawRoundRect(
-            color = Color.White,
-            size = size,
-            cornerRadius = androidx.compose.ui.geometry.CornerRadius(16.dp.toPx()),
-            style = Stroke(width = strokeWidth, pathEffect = PathEffect.cornerPathEffect(16.dp.toPx()))
-        )
+    val coroutineScope = rememberCoroutineScope()
+    var isButtonReleased by remember { mutableStateOf(false) }
+    var vibrationJob by remember { mutableStateOf<Job?>(null) }
+
+    Box(
+        modifier = Modifier
+            .size(squareSize)
+            .background(Color.Transparent),
+        contentAlignment = Alignment.TopStart
+    ) {
+        Canvas(modifier = Modifier.matchParentSize()) {
+            val strokeWidth = with(density) { 4.dp.toPx() }
+
+            // Square with rounded corners
+            drawRoundRect(
+                color = White,
+                size = size,
+                cornerRadius = androidx.compose.ui.geometry.CornerRadius(with(density) { 16.dp.toPx() }),
+                style = Stroke(width = strokeWidth, pathEffect = PathEffect.cornerPathEffect(with(density) { 16.dp.toPx() }))
+            )
+        }
 
         // Dot movement calculation
+        val pathLength = with(density) { squareSize.toPx() * 4 }
         val perimeter = pathLength
         val currentPosition = progress * perimeter
 
         val dotPosition = when {
-            currentPosition <= size.width -> Offset(currentPosition, 0f) // Top side
-            currentPosition <= size.width * 2 -> Offset(size.width, currentPosition - size.width) // Right side
-            currentPosition <= size.width * 3 -> Offset(size.width - (currentPosition - size.width * 2), size.height) // Bottom side
-            else -> Offset(0f, size.height - (currentPosition - size.width * 3)) // Left side
+            currentPosition <= with(density) { squareSize.toPx() } -> Offset(currentPosition, 0f) // Top side
+            currentPosition <= with(density) { squareSize.toPx() * 2 } -> Offset(
+                with(density) { squareSize.toPx() },
+                currentPosition - with(density) { squareSize.toPx() }
+            ) // Right side
+            currentPosition <= with(density) { squareSize.toPx() * 3 } -> Offset(
+                with(density) { squareSize.toPx() } - (currentPosition - with(density) { squareSize.toPx() * 2 }),
+                with(density) { squareSize.toPx() }
+            ) // Bottom side
+            else -> Offset(
+                0f,
+                with(density) { squareSize.toPx() } - (currentPosition - with(density) { squareSize.toPx() * 3 })
+            ) // Left side
         }
 
-        // Moving dot
-        drawCircle(
-            color = Color.White,
-            radius = 8.dp.toPx(),
-            center = dotPosition
+        // Convert Offset to Dp for positioning
+        val offsetModifier = Modifier.offset(
+            x = with(density) { (dotPosition.x - buttonSize.toPx() / 2).toDp() },
+            y = with(density) { (dotPosition.y - buttonSize.toPx() / 2).toDp() }
         )
+
+        // Moving button
+        Box(
+            modifier = offsetModifier.size(buttonSize),
+            contentAlignment = Alignment.Center
+        ) {
+            val interactionSource = remember { MutableInteractionSource() }
+            val isPressed by interactionSource.collectIsPressedAsState()
+
+            // Trigger vibration only if the button is released for more than 5 seconds
+            LaunchedEffect(isPressed) {
+                if (isPressed) {
+                    // Button is pressed, cancel any ongoing vibration job
+                    vibrationJob?.cancel()
+                    vibrationJob = null
+                    isButtonReleased = false
+                } else {
+                    // Button is released, start the 5-second countdown
+                    if (!isButtonReleased) {
+                        isButtonReleased = true
+                        vibrationJob = coroutineScope.launch {
+                            delay(5000) // Wait for 5 seconds
+                            if (isButtonReleased) {
+                                vibrator?.let {
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                        it.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE))
+                                    } else {
+                                        @Suppress("DEPRECATION")
+                                        it.vibrate(200)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            Button(
+                onClick = { /* Handle button click */ },
+                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                    containerColor = if (isPressed) AccentL else White
+                ),
+                interactionSource = interactionSource,
+                modifier = Modifier.fillMaxSize()
+            ) {}
+        }
     }
 }
+
 
 @Composable
 fun CenteredHoldCircle(progress: Float) {
