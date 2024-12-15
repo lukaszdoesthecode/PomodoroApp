@@ -12,9 +12,8 @@ class ShortBreakActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             PomodojoTheme {
-                ShortBreakScreen()
+                ShortBreakScreen(context = this)
             }
         }
     }
 }
-

@@ -1,5 +1,6 @@
 package com.example.pomodojo.functionality.pomodoro.screens
 
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -7,7 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -15,14 +16,28 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.pomodojo.R
+import com.example.pomodojo.functionality.pomodoro.service.AudioPlayerService
 import com.example.pomodojo.functionality.pomodoro.components.MenuBar
 import com.example.pomodojo.ui.theme.*
 import kotlinx.coroutines.delay
 
 @Composable
-fun ShortBreakScreen() {
+fun ShortBreakScreen(context: Context) {
     var timeLeft by remember { mutableStateOf(5 * 60) } // 5 minutes in seconds
     var isPaused by remember { mutableStateOf(true) } // Timer is initially paused
+    val audioPlayer = remember { AudioPlayerService(context) }
+
+    // Play audio when the screen is displayed
+    LaunchedEffect(Unit) {
+        audioPlayer.playAudio(R.raw.vo_intro)
+    }
+
+    // Stop audio when the composable is disposed
+    DisposableEffect(Unit) {
+        onDispose {
+            audioPlayer.stopAudio()
+        }
+    }
 
     // Launch a coroutine for countdown
     LaunchedEffect(isPaused) {
@@ -87,8 +102,19 @@ fun ShortBreakScreen() {
             ) {
                 MenuBar(
                     onLeftClick = {},
-                    onCenterClick = { isPaused = it }, // Update the timer state
-                    onRightClick = {},
+                    onCenterClick = {
+                        isPaused = it
+                        if (!it) {
+                            audioPlayer.playAudio(R.raw.vo_guide_2) // Play guide audio on center button click
+                        }
+                    }, // Update the timer state
+                    onRightClick = {
+                        if (audioPlayer.isPlaying()) {
+                            audioPlayer.stopAudio()
+                        } else {
+                            audioPlayer.restartAudio() // Restart audio on right button click
+                        }
+                    },
                     buttonHeight = 54.dp
                 )
             }
@@ -114,6 +140,6 @@ fun ShortBreakScreen() {
 @Composable
 fun ShortBreakScreenPreview() {
     PomodojoTheme {
-        ShortBreakScreen()
+        ShortBreakScreen(context = LocalContext.current)
     }
 }
