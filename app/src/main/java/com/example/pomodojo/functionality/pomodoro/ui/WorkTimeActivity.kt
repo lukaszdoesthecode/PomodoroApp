@@ -51,15 +51,17 @@ class WorkTimeActivity : ComponentActivity() {
 
             val combinedFlow = combine(
                 timerService?.timeFlow ?: flowOf(),
-                timerService?.sessionStatusFlow ?: flowOf()
-            ) { time, sessionStatus ->
-                Pair(time, sessionStatus)
+                timerService?.sessionStatusFlow ?: flowOf(),
+                timerService?.timerRunningFlow ?: flowOf()
+            ) { time, sessionStatus, timerRunning ->
+                Triple(time, sessionStatus, timerRunning)
             }
 
             lifecycleScope.launch {
-                combinedFlow.collect { (newTime, newSessionStatus) ->
+                combinedFlow.collect { (newTime, newSessionStatus, newTimerRunning) ->
                     time = newTime
                     sessionState = newSessionStatus
+                    timerRunning = newTimerRunning
                 }
             }
         }
@@ -80,6 +82,15 @@ class WorkTimeActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         createSharedPrefs()
         enableEdgeToEdge()
+
+        checkAndRequestNotificationPermission()
+        tryToBindToServiceIfRunning()
+        if (!restoreSessionStateSharedPrefs()) {
+            // Optional error handling can be added here if needed
+        }
+
+        Log.d(TAG, "onCreate WorkTimeActivity")
+
         setContent {
             PomodojoTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -94,15 +105,12 @@ class WorkTimeActivity : ComponentActivity() {
                 }
             }
         }
-        checkAndRequestNotificationPermission()
-        if (!restoreSessionStateSharedPrefs()) {
-        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         if (timerService != null) {
-            unbindService(connection)
+            //unbindService(connection)
         }
     }
 

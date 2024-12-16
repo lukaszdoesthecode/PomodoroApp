@@ -50,6 +50,7 @@ class LoginActivity : ComponentActivity() {
                 }
             }
         }
+
     }
 
     /**

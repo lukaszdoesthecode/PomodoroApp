@@ -28,7 +28,7 @@ internal object NotificationsHelper {
         val channel = NotificationChannel(
             NOTIFICATION_CHANNEL_ID,
             "pomodojo_timer_channel",
-            NotificationManager.IMPORTANCE_HIGH
+            NotificationManager.IMPORTANCE_LOW
         )
         notificationManager.createNotificationChannel(channel)
     }
