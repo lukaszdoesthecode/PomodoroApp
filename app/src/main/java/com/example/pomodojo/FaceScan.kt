@@ -115,7 +115,14 @@ class FaceScan : ComponentActivity() {
                             smileProb in 0.3f..0.7f -> "Neutral"
                             else -> "Sad"
                         }
+
                         Toast.makeText(this, "Detected Emotion: $detectedEmotion", Toast.LENGTH_SHORT).show()
+
+                        // Create intent and send the detected emotion to SpotifyPlaylist activity
+                        val intent = Intent(this, SpotifyPlaylist::class.java).apply {
+                            putExtra("DETECTED_EMOTION", detectedEmotion)
+                        }
+                        startActivity(intent)
                     }
                 }
             }
@@ -123,6 +130,7 @@ class FaceScan : ComponentActivity() {
                 Toast.makeText(this, "Face detection failed: ${e.message}", Toast.LENGTH_LONG).show()
             }
     }
+
 }
 
 @Composable
