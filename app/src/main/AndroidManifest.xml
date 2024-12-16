@@ -21,25 +21,22 @@
 
         <!-- Activities from both manifests -->
         <activity
-            android:name=".auth.activities.MainActivity"
+            android:name=".functionality.dashboard.ui.HomeActivity"
             android:exported="false" />
         <activity
-            android:name=".auth.activities.SignUpActivity"
+            android:name=".functionality.auth.ui.SignUpActivity"
             android:exported="false" />
         <activity
-            android:name=".auth.activities.FollowUpActivity"
+            android:name=".functionality.auth.ui.FollowUpActivity"
             android:exported="false" />
         <activity
-            android:name=".auth.activities.LoginActivity"
+            android:name=".functionality.auth.ui.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".functionality.dashboard.ui.HomeActivity"
-            android:exported="false" />
         <activity android:name=".functionality.pomodoro.ui.ShortBreakActivity" />
         <activity
             android:name=".functionality.pomodoro.ui.WorkTimeActivity"
