@@ -180,9 +180,22 @@ fun LoginScreen(viewModel: LoginViewModel = viewModel()) {
                 modifier = Modifier.size(40.dp)
             )
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = { viewModel.navigateToHome() },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .height(48.dp),
+            shape = RectangleShape,
+            colors = ButtonDefaults.buttonColors(containerColor = Primary)
+        ) {
+            Text("Skip", fontSize = 20.sp, color = White)
+        }
     }
 }
-
 /**
  * Composable function that displays an input field with password visibility toggle for the Login screen.
  *

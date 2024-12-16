@@ -56,6 +56,14 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
         _googleSignInIntent.postValue(signInIntent)
     }
 
+
+    /**
+     * Navigates to the Home screen without logging in. Only to be used for testing purposes.
+     */
+    fun navigateToHome() {
+    _navigateToHome.postValue(Unit)
+}
+
     /**
      * Handles the result of the Google sign-in process.
      *
