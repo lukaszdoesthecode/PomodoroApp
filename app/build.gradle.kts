@@ -1,12 +1,9 @@
 plugins {
-    alias(libs.plugins.androidApplication)
-    alias(libs.plugins.jetbrainsKotlinAndroid)
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.googleGmsGoogleServices)
-    alias(libs.plugins.compose.compiler)
-    //id("org.jetbrains.kotlin.plugin.compose") version "2.0.0"
+    alias(libs.plugins.kotlin.compose)
 }
-
-
 
 android {
     namespace = "com.example.pomodojo"
@@ -21,6 +18,11 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
 
     buildTypes {
         release {
@@ -32,10 +34,13 @@ android {
         }
     }
 
-    buildFeatures{
+    buildFeatures {
         viewBinding = true
         compose = true
+    }
 
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.0"
     }
 
     compileOptions {
@@ -45,16 +50,9 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
-
-}
-
-composeCompiler {
-    reportsDestination = layout.buildDirectory.dir("compose_compiler")
-   /// stabilityConfigurationFile = rootProject.layout.projectDirectory.file("stability_config.conf")
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -63,53 +61,53 @@ dependencies {
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.firebase.auth)
+    implementation(libs.core.ktx)
+    implementation(libs.core)
+    implementation(libs.androidx.junit.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui.graphics)
-    implementation(libs.play.services.vision)
+    implementation(libs.androidx.runtime.livedata)
+    implementation(libs.firebase.firestore)
     testImplementation(libs.junit)
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.kotlin)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     implementation(libs.play.services.auth)
+    testImplementation(libs.robolectric.robolectric)
+    androidTestImplementation(libs.androidx.core)
+    testImplementation(libs.androidx.core.testing)
+    testImplementation(libs.mockk)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.activity.compose)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.material3)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    debugImplementation(libs.androidx.ui.tooling)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.material.icons.extended)
+    implementation(libs.androidx.ui.tooling.preview)
+    debugImplementation(libs.androidx.ui.tooling)
+    implementation(libs.androidx.activity.compose)
+    implementation("androidx.compose.material:material:1.4.0")
+    implementation("io.coil-kt:coil-compose:2.4.0")
 
-    val composeBom = platform("androidx.compose:compose-bom:2024.09.00")
-    implementation(composeBom)
-    androidTestImplementation(composeBom)
 
-    // Choose one of the following:
-    // Material Design 3
-    implementation("androidx.compose.material3:material3")
-    // or Material Design 2
-    implementation("androidx.compose.material:material")
-    // or skip Material Design and build directly on top of foundational components
-    implementation("androidx.compose.foundation:foundation")
-    // or only import the main APIs for the underlying toolkit systems,
-    // such as input and measurement/layout
-    implementation("androidx.compose.ui:ui")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.1")
 
-    // Android Studio Preview support
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    debugImplementation("androidx.compose.ui:ui-tooling")
-
-    // UI Tests
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
-
-    // Optional - Integration with activities
-    implementation("androidx.activity:activity-compose:1.9.2")
-    // Optional - Integration with ViewModels
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.5")
-    // Optional - Integration with LiveData
-    implementation("androidx.compose.runtime:runtime-livedata")
-    // Optional - Integration with RxJava
-    implementation("androidx.compose.runtime:runtime-rxjava2")
 
     // Face detection
     implementation("com.google.mlkit:face-detection:16.1.5")
 
     // Spotify integration
-    implementation ("com.spotify.android:auth:1.2.5")
-    implementation ("com.squareup.okhttp3:okhttp:4.11.0")
-
-
-
+    implementation("com.spotify.android:auth:1.2.5")
+    implementation("com.squareup.okhttp3:okhttp:4.11.0")
 }

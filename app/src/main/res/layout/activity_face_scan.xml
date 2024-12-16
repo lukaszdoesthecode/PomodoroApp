@@ -16,8 +16,9 @@
         android:layout_marginTop="36dp"
         android:layout_marginEnd="52dp"
         android:layout_marginBottom="47dp"
-        android:backgroundTint="@color/teal_700"
+        android:backgroundTint="@color/accentL"
         android:text="Gallery"
+        android:textColor="@color/primary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/cameraBtn"
         app:layout_constraintStart_toStartOf="parent"
@@ -31,8 +32,9 @@
         android:layout_marginTop="36dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="47dp"
-        android:backgroundTint="@color/teal_700"
+        android:backgroundTint="@color/accentL"
         android:text="Camera"
+        android:textColor="@color/primary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -48,6 +50,7 @@
         android:layout_marginBottom="135dp"
         android:backgroundTint="@color/accentD"
         android:text="Analyze Image"
+        android:textColor="@color/primary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -70,17 +73,35 @@
         app:layout_constraintTop_toTopOf="parent" />
 
 
+    <TextView
+        android:id="@+id/textViewTitle"
+        android:layout_width="292dp"
+        android:layout_height="49dp"
+        android:layout_marginStart="51dp"
+        android:layout_marginTop="37dp"
+        android:layout_marginBottom="645dp"
+        android:text="Analyze your face!"
+        android:textAlignment="center"
+        android:textColor="@color/accentL"
+        android:textSize="35sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="384dp"
-        android:layout_height="418dp"
+        android:layout_width="310dp"
+        android:layout_height="342dp"
         android:layout_marginStart="13dp"
         android:layout_marginTop="38dp"
         android:layout_marginEnd="14dp"
         android:layout_marginBottom="275dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.513"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/selfie" />
 </androidx.constraintlayout.widget.ConstraintLayout>
