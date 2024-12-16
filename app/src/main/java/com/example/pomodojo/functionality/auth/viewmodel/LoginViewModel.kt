@@ -121,20 +121,21 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
      * @param password The password of the user.
      */
     fun loginUser(email: String, password: String) {
-        if (email.isBlank() || password.isBlank()) {
-            _errorMessage.postValue(Pair("Error", "Email and password cannot be empty."))
-            return
-        }
-
-        auth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener { login ->
-                if (login.isSuccessful) {
-                    _navigateToHome.postValue(Unit)
-                } else {
-                    _errorMessage.postValue(Pair("Error", "Authentication failed: ${login.exception?.localizedMessage}"))
-                }
-            }
+    val trimmedEmail = email.trim()
+    if (trimmedEmail.isBlank() || password.isBlank()) {
+        _errorMessage.postValue(Pair("Error", "Email and password cannot be empty."))
+        return
     }
+
+    auth.signInWithEmailAndPassword(trimmedEmail, password)
+        .addOnCompleteListener { login ->
+            if (login.isSuccessful) {
+                _navigateToHome.postValue(Unit)
+            } else {
+                _errorMessage.postValue(Pair("Error", "Authentication failed: ${login.exception?.localizedMessage}"))
+            }
+        }
+}
 
     /**
      * Navigates to the Sign-Up screen.
