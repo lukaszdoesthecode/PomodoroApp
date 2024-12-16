@@ -1,5 +1,6 @@
 package com.example.pomodojo.functionality.dashboard.screens
 
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -11,6 +12,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -23,6 +25,7 @@ import com.example.pomodojo.R
 import com.example.pomodojo.functionality.dashboard.viewmodel.HomeViewModel
 import com.example.pomodojo.ui.theme.PomodojoTheme
 import com.example.pomodojo.core.utils.ErrorSnackBar
+import com.example.pomodojo.functionality.facescan.FaceScan
 
 /**
  * Composable function that displays the main screen of the application.
@@ -36,6 +39,7 @@ fun MainScreen(
     backgroundColor: Color = colorResource(R.color.primary)
 ) {
     val errorMessage by viewModel.errorMessage.observeAsState()
+    val context = LocalContext.current
 
     Scaffold(
         bottomBar = { BottomNavigationBar() }
@@ -159,30 +163,17 @@ fun MainScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Row(
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier.fillMaxWidth()
+            Button(
+                onClick = {
+                    viewModel.navigateToFaceScan()
+                    context.startActivity(Intent(context, FaceScan::class.java))
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 2.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
             ) {
-                Button(
-                    onClick = { /* Navigate to Pomodoro */ },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-                ) {
-                    Text("Pomodoro", color = Color.White)
-                }
-
-                Button(
-                    onClick = { /* Navigate to FaceScan */ },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-                ) {
-                    Text("FaceScan", color = Color.White)
-                }
-
-                Button(
-                    onClick = { /* Navigate to Spotify */ },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-                ) {
-                    Text("Spotify", color = Color.White)
-                }
+                Text("FaceScan", color = Color.White)
             }
 
             Spacer(modifier = Modifier.height(24.dp))

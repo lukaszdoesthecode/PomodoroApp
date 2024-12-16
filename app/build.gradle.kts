@@ -69,6 +69,8 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.firebase.firestore)
+    implementation(libs.vision.common)
+    implementation(libs.play.services.mlkit.face.detection)
     testImplementation(libs.junit)
     testImplementation(libs.mockito.core)
     testImplementation(libs.mockito.kotlin)
@@ -92,4 +94,11 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.1")
+    implementation(libs.coil.compose)
+    implementation("com.google.mlkit:face-detection:16.1.5")
+    implementation("com.spotify.android:auth:1.2.5")
+    implementation("com.squareup.okhttp3:okhttp:4.11.0")
+
+
+
 }
