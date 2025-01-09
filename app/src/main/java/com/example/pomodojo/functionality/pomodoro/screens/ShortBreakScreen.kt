@@ -1,6 +1,9 @@
 package com.example.pomodojo.functionality.pomodoro.screens
 
 import android.content.Context
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -31,6 +34,7 @@ fun ShortBreakScreen(context: Context) {
     var timeLeft by remember { mutableStateOf(5 * 60) }
     var isPaused by remember { mutableStateOf(true) }
     val audioPlayer = remember { AudioPlayerService(context) }
+    val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
 
     LaunchedEffect(Unit) {
         audioPlayer.playAudio(R.raw.vo_intro)
@@ -46,6 +50,17 @@ fun ShortBreakScreen(context: Context) {
         while (timeLeft > 0 && !isPaused) {
             delay(1000L)
             timeLeft -= 1
+
+            if (timeLeft <= 5) {
+                vibrator?.let {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        it.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE))
+                    } else {
+                        @Suppress("DEPRECATION")
+                        it.vibrate(500)
+                    }
+                }
+            }
         }
     }
 
