@@ -13,14 +13,21 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.pomodojo.ui.theme.*
 
+/**
+ * Composable function for the MenuBar with three buttons: left, center, and right.
+ *
+ * @param onLeftClick Callback for the left button click.
+ * @param onCenterClick Callback for the center button click, toggles Pause/Play.
+ * @param onRightClick Callback for the right button click, toggles Lightbulb ON/OFF.
+ * @param buttonHeight Height of the buttons in the MenuBar.
+ */
 @Composable
 fun MenuBar(
     onLeftClick: () -> Unit = {},
-    onCenterClick: (Boolean) -> Unit = {}, // Callback for Pause/Play
-    onRightClick: (Boolean) -> Unit = {}, // Callback for Lightbulb ON/OFF
-    buttonHeight: androidx.compose.ui.unit.Dp = 56.dp // Default height
+    onCenterClick: (Boolean) -> Unit = {},
+    onRightClick: (Boolean) -> Unit = {},
+    buttonHeight: androidx.compose.ui.unit.Dp = 56.dp
 ) {
-    // State for toggling Pause/Play and Lightbulb ON/OFF
     var isPaused by remember { mutableStateOf(true) }
     var isLightOn by remember { mutableStateOf(true) }
 
@@ -43,10 +50,10 @@ fun MenuBar(
         MenuButton(
             iconId = if (isPaused) com.example.pomodojo.R.drawable.ic_play else com.example.pomodojo.R.drawable.ic_pause,
             backgroundColor = ShadowL,
-            height = buttonHeight * 1.3f, // Slightly larger center button
+            height = buttonHeight * 1.3f,
             onClick = {
                 isPaused = !isPaused
-                onCenterClick(isPaused) // Notify parent of state change
+                onCenterClick(isPaused)
             }
         )
 
@@ -57,12 +64,20 @@ fun MenuBar(
             height = buttonHeight,
             onClick = {
                 isLightOn = !isLightOn
-                onRightClick(isLightOn) // Notify parent of state change
+                onRightClick(isLightOn)
             }
         )
     }
 }
 
+/**
+ * Composable function for a MenuButton with an icon.
+ *
+ * @param iconId Resource ID of the icon to be displayed on the button.
+ * @param backgroundColor Background color of the button.
+ * @param height Height of the button.
+ * @param onClick Callback for the button click.
+ */
 @Composable
 fun MenuButton(
     iconId: Int,
@@ -70,10 +85,10 @@ fun MenuButton(
     height: androidx.compose.ui.unit.Dp,
     onClick: () -> Unit
 ) {
-    val width = height * 1.5f // 3:2 width-to-height ratio
+    val width = height * 1.5f
 
     Surface(
-        shape = RoundedCornerShape(8.dp), // Rounded rectangle shape
+        shape = RoundedCornerShape(8.dp),
         color = backgroundColor,
         shadowElevation = 4.dp,
         modifier = Modifier
@@ -87,7 +102,7 @@ fun MenuButton(
             Image(
                 painter = painterResource(id = iconId),
                 contentDescription = null,
-                modifier = Modifier.size(height / 2) // Icon size proportional to the button height
+                modifier = Modifier.size(height / 2)
             )
         }
     }

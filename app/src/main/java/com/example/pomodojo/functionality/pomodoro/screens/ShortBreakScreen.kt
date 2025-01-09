@@ -21,28 +21,30 @@ import com.example.pomodojo.functionality.pomodoro.components.MenuBar
 import com.example.pomodojo.ui.theme.*
 import kotlinx.coroutines.delay
 
+/**
+ * Composable function for the ShortBreakScreen.
+ *
+ * @param context The context used to initialize the AudioPlayerService.
+ */
 @Composable
 fun ShortBreakScreen(context: Context) {
-    var timeLeft by remember { mutableStateOf(5 * 60) } // 5 minutes in seconds
-    var isPaused by remember { mutableStateOf(true) } // Timer is initially paused
+    var timeLeft by remember { mutableStateOf(5 * 60) }
+    var isPaused by remember { mutableStateOf(true) }
     val audioPlayer = remember { AudioPlayerService(context) }
 
-    // Play audio when the screen is displayed
     LaunchedEffect(Unit) {
         audioPlayer.playAudio(R.raw.vo_intro)
     }
 
-    // Stop audio when the composable is disposed
     DisposableEffect(Unit) {
         onDispose {
             audioPlayer.stopAudio()
         }
     }
 
-    // Launch a coroutine for countdown
     LaunchedEffect(isPaused) {
         while (timeLeft > 0 && !isPaused) {
-            delay(1000L) // Wait for 1 second
+            delay(1000L)
             timeLeft -= 1
         }
     }
@@ -62,7 +64,6 @@ fun ShortBreakScreen(context: Context) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
-            // Top Image
             Image(
                 painter = painterResource(id = R.drawable.ic_short_break),
                 contentDescription = "Short Break",
@@ -73,7 +74,6 @@ fun ShortBreakScreen(context: Context) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Timer
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
                     text = minutes,
@@ -93,11 +93,10 @@ fun ShortBreakScreen(context: Context) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // MenuBar: fixed size, aligned at the bottom of its section
             Box(
                 modifier = Modifier
                     .width(350.dp)
-                    .height(55.dp), // Fixed height for MenuBar
+                    .height(55.dp),
                 contentAlignment = Alignment.Center
             ) {
                 MenuBar(
@@ -105,14 +104,14 @@ fun ShortBreakScreen(context: Context) {
                     onCenterClick = {
                         isPaused = it
                         if (!it) {
-                            audioPlayer.playAudio(R.raw.vo_guide_2) // Play guide audio on center button click
+                            audioPlayer.playAudio(R.raw.vo_guide_2)
                         }
-                    }, // Update the timer state
+                    },
                     onRightClick = {
                         if (audioPlayer.isPlaying()) {
                             audioPlayer.stopAudio()
                         } else {
-                            audioPlayer.restartAudio() // Restart audio on right button click
+                            audioPlayer.restartAudio()
                         }
                     },
                     buttonHeight = 54.dp
@@ -121,11 +120,10 @@ fun ShortBreakScreen(context: Context) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Square Breathing Visual
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .weight(1f) // Remaining space
+                    .weight(1f)
                     .aspectRatio(1f)
                     .background(Primary),
                 contentAlignment = Alignment.Center
@@ -136,6 +134,9 @@ fun ShortBreakScreen(context: Context) {
     }
 }
 
+/**
+ * Preview function for the ShortBreakScreen composable.
+ */
 @Preview(showBackground = true)
 @Composable
 fun ShortBreakScreenPreview() {

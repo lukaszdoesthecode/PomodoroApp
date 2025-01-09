@@ -38,17 +38,19 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-
-
+/**
+ * Composable function for the SquareBreathingVisual.
+ *
+ * @param isPaused Boolean indicating whether the animation is paused.
+ */
 @Composable
 fun SquareBreathingVisual(isPaused: Boolean) {
-    // Animation progress along the square's path (0f to 1f)
     var progress by remember { mutableStateOf(0f) }
     val infiniteTransition = rememberInfiniteTransition()
 
     LaunchedEffect(isPaused) {
         if (!isPaused) {
-            progress = 0f // Reset progress when animation starts
+            progress = 0f
         }
     }
 
@@ -68,23 +70,25 @@ fun SquareBreathingVisual(isPaused: Boolean) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Primary), // Use Primary as the background color
+            .background(Primary),
         contentAlignment = Alignment.Center
     ) {
-        // Square breathing visualization
         BreathingSquare(progress = progress)
-        // Centered circle with animation (delayed by 4 seconds)
         CenteredHoldCircle(progress = (progress + 0.25f) % 1f)
     }
 }
 
+/**
+ * Composable function for the BreathingSquare.
+ *
+ * @param progress Float value representing the animation progress.
+ */
 @Composable
 fun BreathingSquare(progress: Float) {
     val squareSize = 250.dp
     val density = LocalDensity.current
-    val buttonSize = 64.dp // Button size
+    val buttonSize = 64.dp
 
-    // Modern vibration handling
     val context = LocalContext.current
     val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? android.os.VibratorManager
@@ -107,7 +111,6 @@ fun BreathingSquare(progress: Float) {
         Canvas(modifier = Modifier.matchParentSize()) {
             val strokeWidth = with(density) { 4.dp.toPx() }
 
-            // Square with rounded corners
             drawRoundRect(
                 color = White,
                 size = size,
@@ -116,34 +119,31 @@ fun BreathingSquare(progress: Float) {
             )
         }
 
-        // Dot movement calculation
         val pathLength = with(density) { squareSize.toPx() * 4 }
         val perimeter = pathLength
         val currentPosition = progress * perimeter
 
         val dotPosition = when {
-            currentPosition <= with(density) { squareSize.toPx() } -> Offset(currentPosition, 0f) // Top side
+            currentPosition <= with(density) { squareSize.toPx() } -> Offset(currentPosition, 0f)
             currentPosition <= with(density) { squareSize.toPx() * 2 } -> Offset(
                 with(density) { squareSize.toPx() },
                 currentPosition - with(density) { squareSize.toPx() }
-            ) // Right side
+            )
             currentPosition <= with(density) { squareSize.toPx() * 3 } -> Offset(
                 with(density) { squareSize.toPx() } - (currentPosition - with(density) { squareSize.toPx() * 2 }),
                 with(density) { squareSize.toPx() }
-            ) // Bottom side
+            )
             else -> Offset(
                 0f,
                 with(density) { squareSize.toPx() } - (currentPosition - with(density) { squareSize.toPx() * 3 })
-            ) // Left side
+            )
         }
 
-        // Convert Offset to Dp for positioning
         val offsetModifier = Modifier.offset(
             x = with(density) { (dotPosition.x - buttonSize.toPx() / 2).toDp() },
             y = with(density) { (dotPosition.y - buttonSize.toPx() / 2).toDp() }
         )
 
-        // Moving button
         Box(
             modifier = offsetModifier.size(buttonSize),
             contentAlignment = Alignment.Center
@@ -151,19 +151,16 @@ fun BreathingSquare(progress: Float) {
             val interactionSource = remember { MutableInteractionSource() }
             val isPressed by interactionSource.collectIsPressedAsState()
 
-            // Trigger vibration only if the button is released for more than 5 seconds
             LaunchedEffect(isPressed) {
                 if (isPressed) {
-                    // Button is pressed, cancel any ongoing vibration job
                     vibrationJob?.cancel()
                     vibrationJob = null
                     isButtonReleased = false
                 } else {
-                    // Button is released, start the 5-second countdown
                     if (!isButtonReleased) {
                         isButtonReleased = true
                         vibrationJob = coroutineScope.launch {
-                            delay(5000) // Wait for 5 seconds
+                            delay(5000)
                             if (isButtonReleased) {
                                 vibrator?.let {
                                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -191,27 +188,29 @@ fun BreathingSquare(progress: Float) {
     }
 }
 
-
+/**
+ * Composable function for the CenteredHoldCircle.
+ *
+ * @param progress Float value representing the animation progress.
+ */
 @Composable
 fun CenteredHoldCircle(progress: Float) {
-    // Custom lerp function for Dp interpolation
     fun lerpDp(start: Dp, stop: Dp, fraction: Float): Dp {
         return start + (stop - start) * fraction
     }
 
-    // Calculate circle size and text based on delayed progress
     val (circleSize, text) = remember(progress) {
         when {
-            progress <= 0.25f -> lerpDp(80.dp, 130.dp, progress / 0.25f) to "inhale" // Expanding (0 - 25%)
-            progress <= 0.5f -> 130.dp to "hold" // Hold at maximum size (25% - 50%)
-            progress <= 0.75f -> lerpDp(130.dp, 80.dp, (progress - 0.5f) / 0.25f) to "exhale" // Contracting (50% - 75%)
-            else -> 80.dp to "hold" // Hold at minimum size (75% - 100%)
+            progress <= 0.25f -> lerpDp(80.dp, 130.dp, progress / 0.25f) to "inhale"
+            progress <= 0.5f -> 130.dp to "hold"
+            progress <= 0.75f -> lerpDp(130.dp, 80.dp, (progress - 0.5f) / 0.25f) to "exhale"
+            else -> 80.dp to "hold"
         }
     }
 
     Surface(
         shape = CircleShape,
-        color = Color(0xFFEDEDED), // Light circle color
+        color = Color(0xFFEDEDED),
         modifier = Modifier.size(circleSize)
     ) {
         Box(contentAlignment = Alignment.Center) {
@@ -225,6 +224,9 @@ fun CenteredHoldCircle(progress: Float) {
     }
 }
 
+/**
+ * Preview function for the SquareBreathingVisual composable.
+ */
 @Preview(showBackground = true)
 @Composable
 fun SquareBreathingVisualPreview() {
