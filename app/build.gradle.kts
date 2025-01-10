@@ -69,6 +69,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.firebase.firestore)
+    implementation(libs.androidx.ui.test.junit4.android)
     testImplementation(libs.junit)
     testImplementation(libs.mockito.core)
     testImplementation(libs.mockito.kotlin)
@@ -110,4 +111,14 @@ dependencies {
     // Spotify integration
     implementation("com.spotify.android:auth:1.2.5")
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
+
+    //testing
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.mockito:mockito-core:4.8.0")
+
+    // For AndroidX Test (Optional)
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    testImplementation("org.robolectric:robolectric:4.10")
+
 }

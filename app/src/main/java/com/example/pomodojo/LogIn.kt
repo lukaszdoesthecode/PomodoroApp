@@ -46,6 +46,12 @@ class LogIn : AppCompatActivity() {
         binding = ActivityLogInBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val btnGoToStats: Button = findViewById(R.id.goToStats)
+        btnGoToStats.setOnClickListener {
+            val goToStatsIntent = Intent(this, UserHistoryActivity::class.java)
+            startActivity(goToStatsIntent)
+        }
+
         val btnGoToFace: Button = findViewById(R.id.goToFace)
         btnGoToFace.setOnClickListener {
             val goToFaceIntent = Intent(this, FaceScan::class.java)

@@ -26,50 +26,55 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Pomodojo"
         tools:targetApi="31">
-
+        <activity
+            android:name=".UserHistoryActivity"
+            android:exported="false" />
         <!-- SpotifyPlaylist activity should be exported to handle the redirect -->
         <activity
             android:name=".SpotifyPlaylist"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="myapp" android:host="callback" />
-            </intent-filter>
-        </activity>
 
-        <!-- FaceScan activity should be exported to handle the redirect -->
+                <data
+                    android:host="callback"
+                    android:scheme="myapp" />
+            </intent-filter>
+        </activity> <!-- FaceScan activity should be exported to handle the redirect -->
         <activity
             android:name=".FaceScan"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="myapp" android:host="callback" />
+
+                <data
+                    android:host="callback"
+                    android:scheme="myapp" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".WorkTimeActivity"
             android:exported="false"
             android:label="@string/title_activity_work_time"
             android:theme="@style/Theme.Pomodojo" />
-
         <activity
             android:name=".Main"
             android:exported="false" />
-
         <activity
             android:name=".SignUp"
             android:exported="false" />
-
         <activity
             android:name=".LogIn"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
