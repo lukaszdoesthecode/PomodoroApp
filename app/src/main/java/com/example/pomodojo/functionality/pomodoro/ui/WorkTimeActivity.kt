@@ -97,7 +97,10 @@ class WorkTimeActivity : ComponentActivity() {
                         modifier = Modifier.padding(innerPadding),
                         onClickStartStop = ::startStopService,
                         onClickReset = ::resetAll,
-                        onClickSkip = ::navigateToShortBreak,
+                        onClickSkip = { navigateToShortBreak()
+                                        stopService()
+                                        resetAll()
+                                      },
                         timeSeconds = time,
                         sessionState = sessionState
                     )
