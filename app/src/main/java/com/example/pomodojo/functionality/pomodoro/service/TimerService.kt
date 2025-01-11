@@ -14,6 +14,7 @@ import android.os.Binder
 import androidx.compose.runtime.Composable
 import com.example.pomodojo.core.utils.ErrorSnackBar
 import com.example.pomodojo.core.utils.NotificationsHelper
+import com.example.pomodojo.functionality.auth.screens.LoginScreen
 import com.example.pomodojo.functionality.pomodoro.state.SessionState
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,6 +39,7 @@ class TimerService : Service() {
     val sessionStatusFlow: StateFlow<SessionState> get() = _sessionStatusFlow
     val _timerRunning = MutableStateFlow(false)
     val timerRunningFlow: StateFlow<Boolean> get() = _timerRunning
+    var onFinishSession: (SessionState) -> Unit = {}
 
     private var performMainWorkJob: Job? = null
     private lateinit var sharedPref: SharedPreferences
@@ -51,13 +53,13 @@ class TimerService : Service() {
 
     private val sessionSequence = listOf(
         SessionState.WORK,
-        SessionState.SHORT_BREAK,
-        SessionState.WORK,
-        SessionState.SHORT_BREAK,
-        SessionState.WORK,
-        SessionState.SHORT_BREAK,
-        SessionState.WORK,
-        SessionState.LONG_BREAK
+        //SessionState.SHORT_BREAK,
+       // SessionState.WORK,
+        //SessionState.SHORT_BREAK,
+       // SessionState.WORK,
+       // SessionState.SHORT_BREAK,
+       // SessionState.WORK,
+       // SessionState.LONG_BREAK
     )
     // Other service code...
 
@@ -81,7 +83,7 @@ class TimerService : Service() {
     override fun onCreate() {
         super.onCreate()
         sharedPref = getSharedPreferences("myPrefs", MODE_PRIVATE)
-
+        initSessionState()
     }
 
     private suspend fun makeToastAsync(message: String) {
@@ -139,14 +141,16 @@ class TimerService : Service() {
                 )
 
                 if (timeFlow.value == 0) {
-                    changeSessionState()
+                    onFinishSession(sessionSequence[currentSessionIndex])
+                    stopForegroundService()
+                    /*changeSessionState()
                     makeToastAsync(
                         "Session starting: ${
                             getSessionStateStringNonComposable(
                                 sessionStatusFlow.value
                             )
                         }"
-                    )
+                    )*/
            //     }
                 }
           }
@@ -167,6 +171,7 @@ class TimerService : Service() {
         val nextSession = sessionSequence[currentSessionIndex]
         _sessionStatusFlow.value = nextSession
         updateTime(sessionTimeMap[nextSession] ?: 1500)
+        Log.d("testing-1", sessionTimeMap.toString())
         Log.d(
             "Session State",
             "Starting Session: ${getSessionStateStringNonComposable(nextSession)}"
@@ -180,12 +185,15 @@ class TimerService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        sessionTimeMap = mapOf(
-            SessionState.WORK to sharedPref.getInt("work_duration", 1500),
-            SessionState.SHORT_BREAK to sharedPref.getInt("short_break_duration", 300),
-            SessionState.LONG_BREAK to sharedPref.getInt("long_break_duration", 900)
-        )
-        initSessionState()
+//        sessionTimeMap = mapOf(
+//            SessionState.WORK to sharedPref.getInt("work_duration", 1500),
+//            SessionState.SHORT_BREAK to sharedPref.getInt("short_break_duration", 300),
+//            SessionState.LONG_BREAK to sharedPref.getInt("long_break_duration", 900)
+//        )
+        //initSessionState()
+        if(intent?.getStringExtra("action") == "resume"){
+            restoreSessionStateSharedPrefs()
+        }
 
         performMainWorkJob = serviceScope.launch {
             performMainWorkLogic(
@@ -235,29 +243,38 @@ class TimerService : Service() {
     }
 
     fun initSessionState() {
-        val restored = restoreSessionStateSharedPrefs()
-
-        if (!restored) {
+        sessionTimeMap = mapOf(
+            SessionState.WORK to sharedPref.getInt("work_duration", 1500),
+            SessionState.SHORT_BREAK to sharedPref.getInt("short_break_duration", 300),
+            SessionState.LONG_BREAK to sharedPref.getInt("long_break_duration", 900)
+        )
+       // val restored = restoreSessionStateSharedPrefs()
+        Log.d("testing-2", "initSessionState()")
+        Log.d("testing-2", sessionTimeMap.toString())
+        Log.d("testing-2", (sessionTimeMap[sessionSequence[0]] ?: 1500).toString())
+        //if (!restored) {
             _timeFlow.value = sessionTimeMap[sessionSequence[0]] ?: 1500
             _sessionStatusFlow.value = SessionState.WORK
-        }
+       // }
+
+        Log.d("testing-2", _timeFlow.value.toString() )
     }
 
     private fun restoreSessionStateSharedPrefs(): Boolean {
-    val sharedPref = getSharedPreferences("myPrefs", MODE_PRIVATE)
-    val storedCurrentState = sharedPref.getInt("current_state_index", -1)
-    val storedTime = sharedPref.getInt("remaining_time", -1)
+        val sharedPref = getSharedPreferences("myPrefs", MODE_PRIVATE)
+        val storedCurrentState = sharedPref.getInt("current_state_index", -1)
+        val storedTime = sharedPref.getInt("remaining_time", -1)
 
-    return if (storedCurrentState != -1 && storedTime != -1) {
-        _timeFlow.value = storedTime
-        currentSessionIndex = storedCurrentState
-        _sessionStatusFlow.value = sessionSequence[currentSessionIndex]
-        true
-    } else {
-        _timeFlow.value = sessionTimeMap[SessionState.WORK] ?: 1500
-        _sessionStatusFlow.value = SessionState.WORK
-        true
-    }
+        return if (storedCurrentState != -1 && storedTime != -1) {
+            _timeFlow.value = storedTime
+            currentSessionIndex = storedCurrentState
+            _sessionStatusFlow.value = sessionSequence[currentSessionIndex]
+            true
+        } else {
+            _timeFlow.value = sessionTimeMap[SessionState.WORK] ?: 1500
+            _sessionStatusFlow.value = SessionState.WORK
+            true
+        }
 }
 
     fun storeSessionStateSharedPrefs() {
