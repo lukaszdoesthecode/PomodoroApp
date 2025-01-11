@@ -14,14 +14,36 @@ class HomeViewModel : ViewModel() {
     private val _navigateToFaceScan = MutableLiveData<Boolean?>(null)
     val navigateToFaceScan: LiveData<Boolean?> = _navigateToFaceScan
 
-    private val _navigateToSpotify = MutableLiveData<Boolean?>(null)
-    val navigateToSpotify: LiveData<Boolean?> = _navigateToSpotify
+    private val _navigateToConfig = MutableLiveData<Boolean?>(null)
+    val navigateToConfig: LiveData<Boolean?> = _navigateToConfig
 
     private val _navigateToPomodoro = MutableLiveData<Boolean?>(null)
     val navigateToPomodoro: LiveData<Boolean?> = _navigateToPomodoro
 
     private val _errorMessage = MutableLiveData<Pair<String, String>?>(null)
     val errorMessage: LiveData<Pair<String, String>?> = _errorMessage
+
+
+
+
+    /**
+     * Sends configuration data and navigates to the Config screen.
+     */
+    fun saveConfiguration(shortBreak: String, focusTime: String, longBreak: String, repetitions: String) {
+        viewModelScope.launch {
+            try {
+                val configData = mapOf(
+                    "shortBreak" to shortBreak,
+                    "focusTime" to focusTime,
+                    "longBreak" to longBreak,
+                    "repetitions" to repetitions
+                )
+                //  _navigateToConfig.value = configData
+            } catch (e: Exception) {
+                _errorMessage.value = Pair("Save Configuration Error", e.message ?: "Unknown error")
+            }
+        }
+    }
 
     /**
      * Navigates to the FaceScan screen.
@@ -30,19 +52,6 @@ class HomeViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 _navigateToFaceScan.value = true
-            } catch (e: Exception) {
-                _errorMessage.value = Pair("Navigation Error", e.message ?: "Unknown error")
-            }
-        }
-    }
-
-    /**
-     * Navigates to the Spotify screen.
-     */
-    fun navigateToSpotify() {
-        viewModelScope.launch {
-            try {
-                _navigateToSpotify.value = true
             } catch (e: Exception) {
                 _errorMessage.value = Pair("Navigation Error", e.message ?: "Unknown error")
             }
@@ -69,7 +78,6 @@ class HomeViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 _navigateToFaceScan.value = null
-                _navigateToSpotify.value = null
                 _navigateToPomodoro.value = null
             } catch (e: Exception) {
                 _errorMessage.value = Pair("Reset Error", e.message ?: "Unknown error")

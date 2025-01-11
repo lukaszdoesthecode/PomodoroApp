@@ -1,17 +1,16 @@
 package com.example.pomodojo.functionality.dashboard.screens
 
 import android.content.Intent
+import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -26,6 +25,13 @@ import com.example.pomodojo.functionality.dashboard.viewmodel.HomeViewModel
 import com.example.pomodojo.ui.theme.PomodojoTheme
 import com.example.pomodojo.core.utils.ErrorSnackBar
 import com.example.pomodojo.functionality.facescan.FaceScan
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import com.airbnb.lottie.compose.*
+import com.example.pomodojo.functionality.dashboard.Config
+import com.example.pomodojo.functionality.pomodoro.ui.WorkTimeActivity
 
 /**
  * Composable function that displays the main screen of the application.
@@ -36,147 +42,188 @@ import com.example.pomodojo.functionality.facescan.FaceScan
 @Composable
 fun MainScreen(
     viewModel: HomeViewModel = viewModel(),
-    backgroundColor: Color = colorResource(R.color.primary)
+    backgroundColor: Color = colorResource(R.color.accentL)
 ) {
     val errorMessage by viewModel.errorMessage.observeAsState()
     val context = LocalContext.current
 
-    Scaffold(
-        bottomBar = { BottomNavigationBar() }
-    ) { padding ->
+    var config by remember { mutableStateOf(Config()) }
+
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.animation))
+    val progress by animateLottieCompositionAsState(
+        composition = composition,
+        iterations = LottieConstants.IterateForever
+    )
+
+    Scaffold { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .background(backgroundColor)
                 .padding(padding)
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(vertical = 16.dp)
+                .verticalScroll(rememberScrollState())
         ) {
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = "Welcome, User!",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
-                modifier = Modifier.align(Alignment.Start)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = "Welcome message",
-                fontSize = 16.sp,
-                color = Color.Gray,
-                modifier = Modifier.align(Alignment.Start)
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
 
             Row(
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                TimeOption("Short time", "5")
-                TimeOption("Focus time", "25")
-                TimeOption("Long break", "15")
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Text(
-                text = "Music genre",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
-            Text(
-                text = "Music genre",
-                fontSize = 14.sp,
-                color = Color.Gray
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = "How's Your Mood Today?",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                MoodIcon("😊")
-                MoodIcon("😐")
-                MoodIcon("😴")
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Button(
-                onClick = { viewModel.navigateToPomodoro() },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 32.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-            ) {
-                Text("Start New Session", color = Color.White)
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Text(
-                text = "View Your Past Sessions",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
-                textAlign = TextAlign.Start,
-                modifier = Modifier.align(Alignment.Start)
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            LazyRow(
+                    .padding(16.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.fillMaxWidth()
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                items(10) {
-                    PastSessionCard(
-                        date = "Date $it",
-                        timeSpent = "${10 + it} mins",
-                        cycles = "${1 + it} cycles"
+                Text(
+                    text = "Welcome!",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = colorResource(id = R.color.primary),
+                    modifier = Modifier.weight(1f)
+                )
+
+                IconButton(
+                    onClick = {
+                        viewModel.navigateToFaceScan()
+                        context.startActivity(Intent(context, FaceScan::class.java))
+                    },
+                    modifier = Modifier
+                        .size(56.dp)
+                        .background(
+                            color = colorResource(id = R.color.primary),
+                            shape = RoundedCornerShape(10.dp)
+                        )
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.data),
+                        contentDescription = "Data Icon",
+                        tint = colorResource(id = R.color.accentL),
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+
+                IconButton(
+                    onClick = {
+                        viewModel.navigateToFaceScan()
+                        context.startActivity(Intent(context, FaceScan::class.java))
+                    },
+                    modifier = Modifier
+                        .padding(12.dp)
+                        .size(56.dp)
+                        .background(
+                            color = colorResource(id = R.color.primary),
+                            shape = RoundedCornerShape(10.dp)
+                        )
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.face),
+                        contentDescription = "Face Scan",
+                        tint = colorResource(id = R.color.accentL),
+                        modifier = Modifier.fillMaxSize()
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(16.dp))
 
-            Button(
-                onClick = { /* Navigate to more sessions */ },
-                modifier = Modifier.align(Alignment.End),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-            ) {
-                Text("See more", color = Color.White)
-            }
+            Spacer(modifier = Modifier.height(4.dp))
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Button(
-                onClick = {
-                    viewModel.navigateToFaceScan()
-                    context.startActivity(Intent(context, FaceScan::class.java))
-                },
+            Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 2.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                    .padding(16.dp)
+                    .clickable {
+                        Log.d("PomodoroConfig", "Config: $config")
+                        val intent = Intent(context, WorkTimeActivity::class.java).apply {
+                            putExtra("config", config)
+                        }
+                        context.startActivity(intent)
+                    },
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.primary))
             ) {
-                Text("FaceScan", color = Color.White)
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Box(
+                            modifier = Modifier.size(200.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (composition != null) {
+                                LottieAnimation(
+                                    composition = composition,
+                                    progress = { progress },
+                                )
+                            } else {
+                                Text(
+                                    text = "Failed to load animation",
+                                    color = Color.Red,
+                                    fontSize = 16.sp
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Text(
+                            text = "Start Pomodoro Session",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = colorResource(id = R.color.accentL),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = "Customize your sessions:",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = colorResource(id = R.color.primary),
+                textAlign = TextAlign.Start,
+                modifier = Modifier.align(Alignment.Start).padding(16.dp)
+            )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState())
+            ) {
+                val cardColors = listOf(
+                    colorResource(id = R.color.accentD),
+                    colorResource(id = R.color.shadowL),
+                    colorResource(id = R.color.shadowD),
+                    colorResource(id = R.color.primary)
+                )
+                val cardText = listOf("Short Break", "Focus Time", "Long Break", "Iterations")
+
+                cardColors.zip(cardText).forEach { (color, text) ->
+                    CustomizeSessions(
+                        color = color,
+                        text = text,
+                        initialNumbers = when (text) {
+                            "Short Break" -> config.shortBreak
+                            "Focus Time" -> config.focusTime
+                            "Long Break" -> config.longBreak
+                            "Iterations" -> config.iterations
+                            else -> 0
+                        }
+                    ) { updatedNumber ->
+                        when (text) {
+                            "Short Break" -> config = config.copy(shortBreak = updatedNumber)
+                            "Focus Time" -> config = config.copy(focusTime = updatedNumber)
+                            "Long Break" -> config = config.copy(longBreak = updatedNumber)
+                            "Iterations" -> config = config.copy(iterations = updatedNumber)
+                        }
+                    }
+                }
+            }
         }
 
         errorMessage?.let { (mainMessage, subMessage) ->
@@ -185,88 +232,76 @@ fun MainScreen(
     }
 }
 
-/**
- * Composable function that displays the bottom navigation bar.
- */
 @Composable
-fun BottomNavigationBar() {
-    var selectedItem by remember { mutableIntStateOf(0) }
-    val items = listOf(
-        Pair("Ranking", painterResource(id = R.drawable.ic_trophy)),
-        Pair("Home", painterResource(id = R.drawable.ic_house)),
-        Pair("Settings", painterResource(id = R.drawable.ic_settings))
-    )
+fun CustomizeSessions(color: Color, text: String, initialNumbers: Int, onValueChange: (Int) -> Unit) {
+    var numbers by remember { mutableIntStateOf(initialNumbers) }
 
-    NavigationBar {
-        items.forEachIndexed { index, item ->
-            NavigationBarItem(
-                icon = { Icon(item.second, contentDescription = item.first) },
-                label = { Text(item.first) },
-                selected = selectedItem == index,
-                onClick = { selectedItem = index }
+    Card(
+        modifier = Modifier
+            .width(120.dp)
+            .height(250.dp)
+            .padding(6.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = color)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            IconButton(
+                onClick = {
+                    numbers++
+                    onValueChange(numbers)
+                },
+                modifier = Modifier.size(48.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.arrow_up),
+                    contentDescription = "Increase",
+                    tint = colorResource(id = R.color.accentL),
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+
+            Text(
+                text = numbers.toString(),
+                fontSize = 26.sp,
+                color = colorResource(id = R.color.accentL),
+                modifier = Modifier.padding(vertical = 4.dp)
+            )
+
+            // Decrease button
+            IconButton(
+                onClick = {
+                    if (numbers > 0) {
+                        numbers--
+                        onValueChange(numbers) // Update parent state
+                    }
+                },
+                modifier = Modifier.size(48.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.arrow_down),
+                    contentDescription = "Decrease",
+                    tint = colorResource(id = R.color.accentL),
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+
+            // Label for the card
+            Text(
+                text = text,
+                fontSize = 18.sp,
+                color = colorResource(id = R.color.accentL),
+                modifier = Modifier
+                    .padding(vertical = 4.dp),
+                textAlign = TextAlign.Center
             )
         }
     }
-}
-
-/**
- * Composable function that displays a card for a past session.
- *
- * @param date The date of the past session.
- * @param timeSpent The time spent in the past session.
- * @param cycles The number of cycles completed in the past session.
- */
-@Composable
-fun PastSessionCard(date: String, timeSpent: String, cycles: String) {
-    Column(
-        modifier = Modifier
-            .padding(8.dp)
-            .width(200.dp)
-            .background(MaterialTheme.colorScheme.surface, MaterialTheme.shapes.medium)
-            .padding(16.dp)
-    ) {
-        Text(text = date, fontSize = 14.sp, fontWeight = FontWeight.Bold)
-        Text(text = timeSpent, fontSize = 14.sp)
-        Text(text = cycles, fontSize = 14.sp)
-    }
-}
-
-/**
- * Composable function that displays a time option.
- *
- * @param title The title of the time option.
- * @param time The time value of the time option.
- */
-@Composable
-fun TimeOption(title: String, time: String) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(
-            text = title,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.White
-        )
-        Text(
-            text = time,
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.error
-        )
-    }
-}
-
-/**
- * Composable function that displays a mood icon.
- *
- * @param emoji The emoji representing the mood.
- */
-@Composable
-fun MoodIcon(emoji: String) {
-    Text(
-        text = emoji,
-        fontSize = 32.sp,
-        textAlign = TextAlign.Center
-    )
 }
 
 /**

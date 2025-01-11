@@ -20,7 +20,6 @@ class SignUpViewModel(application: Application) : AndroidViewModel(application) 
     val navigateToLogIn: LiveData<Unit> = _navigateToLogIn
 
     private val _errorMessage = MutableLiveData<Pair<String, String>>()
-    val errorMessage: LiveData<Pair<String, String>> = _errorMessage
 
     /**
      * Creates a new user account with the provided information and saves it to Firestore.
@@ -31,43 +30,43 @@ class SignUpViewModel(application: Application) : AndroidViewModel(application) 
      * @param password The password for the new account.
      */
     fun createAnAccount(fullName: String, dob: String, email: String, password: String) {
-    val nameParts = fullName.trim().split(" ")
-    val name = nameParts.first()
-    val surname = nameParts.drop(1).joinToString(" ")
-    val trimmedEmail = email.trim()
+        val nameParts = fullName.trim().split(" ")
+        val name = nameParts.first()
+        val surname = nameParts.drop(1).joinToString(" ")
+        val trimmedEmail = email.trim()
 
-    auth.createUserWithEmailAndPassword(trimmedEmail, password)
-        .addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                val userId = auth.currentUser?.uid
-                if (userId != null) {
-                    val user = mapOf(
-                        "name" to name,
-                        "surname" to surname,
-                        "dob" to dob,
-                        "email" to trimmedEmail
-                    )
+        auth.createUserWithEmailAndPassword(trimmedEmail, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val userId = auth.currentUser?.uid
+                    if (userId != null) {
+                        val user = mapOf(
+                            "name" to name,
+                            "surname" to surname,
+                            "dob" to dob,
+                            "email" to trimmedEmail
+                        )
 
-                    firestore.collection("users").document(userId)
-                        .set(user)
-                        .addOnSuccessListener {
-                            Log.d("SignUpViewModel", "User saved to Firestore")
-                            _navigateToLogIn.postValue(Unit)
-                        }
-                        .addOnFailureListener { e ->
-                            Log.e("SignUpViewModel", "Error saving user to Firestore", e)
-                            _errorMessage.postValue(Pair("Error", "Error while saving user information."))
-                        }
+                        firestore.collection("users").document(userId)
+                            .set(user)
+                            .addOnSuccessListener {
+                                Log.d("SignUpViewModel", "User saved to Firestore")
+                                _navigateToLogIn.postValue(Unit)
+                            }
+                            .addOnFailureListener { e ->
+                                Log.e("SignUpViewModel", "Error saving user to Firestore", e)
+                                _errorMessage.postValue(Pair("Error", "Error while saving user information."))
+                            }
+                    } else {
+                        Log.e("SignUpViewModel", "User ID is null")
+                        _errorMessage.postValue(Pair("Error", "Error while creating account."))
+                    }
                 } else {
-                    Log.e("SignUpViewModel", "User ID is null")
-                    _errorMessage.postValue(Pair("Error", "Error while creating account."))
+                    Log.e("SignUpViewModel", "Error creating user", task.exception)
+                    _errorMessage.postValue(Pair("Error", "Error while authenticating."))
                 }
-            } else {
-                Log.e("SignUpViewModel", "Error creating user", task.exception)
-                _errorMessage.postValue(Pair("Error", "Error while authenticating."))
             }
-        }
-}
+    }
     fun navigateToLogIn() {
         _navigateToLogIn.postValue(Unit)
     }

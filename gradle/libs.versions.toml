@@ -11,6 +11,8 @@ appcompat = "1.7.0"
 material = "1.12.0"
 activity = "1.9.3"
 constraintlayout = "2.2.0"
+lottie = "5.0.3"
+lottieCompose = "6.6.2"
 materialVersion = "1.13.0-alpha07" 
 mockk = "1.12.0"
 navigationFragmentKtx = "2.8.4"
@@ -38,6 +40,7 @@ visionCommon = "17.3.0"
 playServicesMlkitFaceDetection = "17.1.0"
 
 [libraries]
+android-lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottieCompose" }
 androidx-core = { module = "androidx.test:core", version.ref = "core" }
 androidx-core-testing = { module = "androidx.arch.core:core-testing", version.ref = "coreTesting" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
@@ -83,7 +86,7 @@ coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coi
 vision = { module = "com.google.mlkit:vision", version.ref = "vision" }
 vision-common = { group = "com.google.mlkit", name = "vision-common", version.ref = "visionCommon" }
 play-services-mlkit-face-detection = { group = "com.google.android.gms", name = "play-services-mlkit-face-detection", version.ref = "playServicesMlkitFaceDetection" }
-
+lottie = { module = "com.airbnb.android:lottie", version.ref = "lottie" }
 
 
 [plugins]

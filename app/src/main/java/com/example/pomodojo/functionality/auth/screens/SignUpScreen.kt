@@ -17,14 +17,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.pomodojo.R
 import com.example.pomodojo.functionality.auth.viewmodel.SignUpViewModel
 import com.example.pomodojo.ui.theme.Error
-import com.example.pomodojo.ui.theme.PomodojoTheme
 import com.example.pomodojo.ui.theme.Primary
 import com.example.pomodojo.ui.theme.ShadowD
 import com.example.pomodojo.ui.theme.ShadowL
@@ -37,6 +35,7 @@ import java.util.*
  *
  * @param viewModel The ViewModel that handles the logic for the Sign-Up screen.
  */
+@Suppress("KDocUnresolvedReference")
 @Composable
 fun SignUpScreen(viewModel: SignUpViewModel = viewModel()) {
     var name by remember { mutableStateOf("") }
@@ -349,16 +348,5 @@ fun InputFieldWithVisibility(
                 modifier = Modifier.padding(start = 16.dp)
             )
         }
-    }
-}
-
-/**
- * Preview function for the SignUpScreen composable.
- */
-@Preview(showBackground = true)
-@Composable
-fun SignUpScreenPreview() {
-    PomodojoTheme {
-        SignUpScreen()
     }
 }

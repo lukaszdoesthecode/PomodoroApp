@@ -98,7 +98,8 @@ dependencies {
     implementation("com.google.mlkit:face-detection:16.1.5")
     implementation("com.spotify.android:auth:1.2.5")
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
-
+    implementation(libs.lottie)
+    implementation(libs.android.lottie.compose)
 
 
 }

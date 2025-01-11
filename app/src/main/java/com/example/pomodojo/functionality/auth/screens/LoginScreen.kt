@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
@@ -156,30 +155,7 @@ fun LoginScreen(viewModel: LoginViewModel = viewModel()) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(
-            text = "Or",
-            color = colorResource(R.color.accentL),
-            modifier = Modifier.padding(16.dp),
-            textAlign = TextAlign.End
-        )
-        Button(
-            onClick = { viewModel.googleLogin() },
-            modifier = Modifier
-                .height(60.dp)
-                .width(60.dp)
-                .background(
-                    color = Color.White,
-                    shape = RoundedCornerShape(2.dp)
-                ),
-            contentPadding = PaddingValues(0.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.White)
-        ) {
-            Image(
-                painter = painterResource(R.drawable.google_logo),
-                contentDescription = stringResource(R.string.sign_in_with_google),
-                modifier = Modifier.size(40.dp)
-            )
-        }
+
 
         Spacer(modifier = Modifier.height(16.dp))
 
