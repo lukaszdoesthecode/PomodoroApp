@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
@@ -21,7 +23,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -29,8 +33,13 @@ import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.pomodojo.R
 import com.example.pomodojo.functionality.pomodoro.state.SessionState
 import com.example.pomodojo.ui.theme.PomodojoTheme
+import com.example.pomodojo.ui.theme.Primary
+import com.example.pomodojo.ui.theme.ShadowD
+import com.example.pomodojo.ui.theme.ShadowL
+import com.example.pomodojo.ui.theme.White
 
 
 @Composable
@@ -46,6 +55,7 @@ fun WorkTimeScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(Primary)
             .padding(0.dp, 50.dp, 0.dp, 0.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -81,6 +91,7 @@ fun WorkTimeScreen(
                 Text(
                     text = mins,
                     modifier = Modifier.padding(0.dp),
+                    color = White,
                     style = TextStyle(
                         fontSize = 200.sp,
                         fontWeight = FontWeight.ExtraBold,
@@ -92,6 +103,7 @@ fun WorkTimeScreen(
                 Text(
                     text = secs,
                     modifier = Modifier.padding(0.dp),
+                    color = White,
                     style = TextStyle(
                         fontSize = 200.sp,
                         fontWeight = FontWeight.ExtraBold,
@@ -109,32 +121,35 @@ fun WorkTimeScreen(
                 IconButton(
                     onClick = onClickReset,
                     modifier = Modifier
-                        .background(Color.LightGray, shape = RoundedCornerShape(16.dp))
+                        .background(ShadowD, shape = RoundedCornerShape(16.dp))
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Refresh,
-                        contentDescription = "Pause Icon"
+                        contentDescription = "Pause Icon",
+                        tint = White
                     )
                 }
                 IconButton(
                     onClick = onClickStartStop,
                     modifier = Modifier
-                        .background(Color.LightGray, shape = RoundedCornerShape(16.dp))
+                        .background(ShadowD, shape = RoundedCornerShape(16.dp))
                         .size(75.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Filled.PlayArrow,
-                        contentDescription = "Pause Icon"
+                        contentDescription = "Pause Icon",
+                        tint = White
                     )
                 }
                 IconButton(
                     onClick = onClickSkip,
                     modifier = Modifier
-                        .background(Color.LightGray, shape = RoundedCornerShape(16.dp))
+                        .background(ShadowD, shape = RoundedCornerShape(16.dp))
                 ) {
                     Icon(
                         imageVector = Icons.Filled.ArrowForward,
-                        contentDescription = "Pause Icon"
+                        contentDescription = "Pause Icon",
+                        tint = White
                     )
                 }
             }
