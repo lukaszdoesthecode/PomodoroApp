@@ -82,7 +82,7 @@ class TimerService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        sharedPref = getSharedPreferences("myPrefs", MODE_PRIVATE)
+        sharedPref = getSharedPreferences("PomodojoPrefs", MODE_PRIVATE)
         initSessionState()
     }
 
@@ -244,9 +244,9 @@ class TimerService : Service() {
 
     fun initSessionState() {
         sessionTimeMap = mapOf(
-            SessionState.WORK to sharedPref.getInt("work_duration", 1500),
-            SessionState.SHORT_BREAK to sharedPref.getInt("short_break_duration", 300),
-            SessionState.LONG_BREAK to sharedPref.getInt("long_break_duration", 900)
+            SessionState.WORK to sharedPref.getInt("focusTime", 25) * 60,
+            SessionState.SHORT_BREAK to sharedPref.getInt("shortBreak", 5) * 60,
+            SessionState.LONG_BREAK to sharedPref.getInt("longBreak", 20) * 60
         )
        // val restored = restoreSessionStateSharedPrefs()
         Log.d("testing-2", "initSessionState()")
@@ -261,7 +261,7 @@ class TimerService : Service() {
     }
 
     private fun restoreSessionStateSharedPrefs(): Boolean {
-        val sharedPref = getSharedPreferences("myPrefs", MODE_PRIVATE)
+        val sharedPref = getSharedPreferences("PomodojoPrefs", MODE_PRIVATE)
         val storedCurrentState = sharedPref.getInt("current_state_index", -1)
         val storedTime = sharedPref.getInt("remaining_time", -1)
 
@@ -278,7 +278,7 @@ class TimerService : Service() {
 }
 
     fun storeSessionStateSharedPrefs() {
-        val sharedPref = getSharedPreferences("myPrefs", MODE_PRIVATE)
+        val sharedPref = getSharedPreferences("PomodojoPrefs", MODE_PRIVATE)
         val editor = sharedPref.edit()
         editor.putInt("current_state_index", currentSessionIndex)
         editor.putInt("remaining_time", timeFlow.value)

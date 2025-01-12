@@ -80,7 +80,7 @@ class WorkTimeActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        createSharedPrefs()
+        //createSharedPrefs()
         enableEdgeToEdge()
 
         checkAndRequestNotificationPermission()
@@ -111,8 +111,8 @@ class WorkTimeActivity : ComponentActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (timerService != null) {
-            //unbindService(connection)
+        if (timerRunning) {
+            unbindService(connection)
         }
     }
 
@@ -151,7 +151,7 @@ class WorkTimeActivity : ComponentActivity() {
     }
 
     private fun resetAll() {
-        val sharedPref = getSharedPreferences("myPrefs", MODE_PRIVATE)
+        val sharedPref = getSharedPreferences("PomodojoPrefs", MODE_PRIVATE)
         val editor = sharedPref.edit()
         editor.remove("current_session")
         editor.remove("remaining_time")
@@ -161,7 +161,7 @@ class WorkTimeActivity : ComponentActivity() {
         //if (!restoreSessionStateSharedPrefs()) {
          //   Toast.makeText(this, "Reset", Toast.LENGTH_SHORT).show()
        // }
-        time = sharedPref.getInt("work_duration", 25)
+        time = sharedPref.getInt("focusTime", 25) * 60
         sessionState = SessionState.WORK
     }
 
@@ -178,16 +178,16 @@ class WorkTimeActivity : ComponentActivity() {
     }
 
     private fun createSharedPrefs() {
-        val sharedPref = getSharedPreferences("myPrefs", MODE_PRIVATE)
+        val sharedPref = getSharedPreferences("PomodojoPrefs", MODE_PRIVATE)
         val editor = sharedPref.edit()
         editor.putInt("short_break_duration", 5)
-        editor.putInt("long_break_duration", 15)
+        editor.putInt("reak_duration", 15)
         editor.putInt("work_duration", 25)
         editor.apply()
     }
 
     private fun restoreSessionStateSharedPrefs(): Boolean {
-        val sharedPref = getSharedPreferences("myPrefs", MODE_PRIVATE)
+        val sharedPref = getSharedPreferences("PomodojoPrefs", MODE_PRIVATE)
         val storedCurrentSession = sharedPref.getInt("current_session", -1)
         val storedTime = sharedPref.getInt("remaining_time", -1)
 
@@ -196,7 +196,7 @@ class WorkTimeActivity : ComponentActivity() {
             sessionState = SessionState.entries[storedCurrentSession]
             true
         } else {
-            time = sharedPref.getInt("work_duration", 25)
+            time = sharedPref.getInt("focusTime", 25)
             sessionState = SessionState.WORK
             false
         }

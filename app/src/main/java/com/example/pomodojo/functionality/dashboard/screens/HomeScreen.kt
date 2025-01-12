@@ -115,8 +115,7 @@ fun MainScreen(
                             config.iterations
                         )
                         viewModel.navigateToPomodoro()
-                        val intent = Intent(context, WorkTimeActivity::class.java)
-                        context.startActivity(intent)
+
                     },
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.primary))

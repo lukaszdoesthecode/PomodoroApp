@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.pomodojo.R
+import com.example.pomodojo.core.utils.getConfigFromPreferences
 import com.example.pomodojo.functionality.pomodoro.service.AudioPlayerService
 import com.example.pomodojo.functionality.pomodoro.components.MenuBar
 import com.example.pomodojo.ui.theme.*
@@ -35,6 +36,8 @@ fun ShortBreakScreen(context: Context) {
     var isPaused by remember { mutableStateOf(true) }
     val audioPlayer = remember { AudioPlayerService(context) }
     val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
+
+    timeLeft = getConfigFromPreferences(context).shortBreak * 60
 
     LaunchedEffect(Unit) {
         audioPlayer.playAudio(R.raw.vo_intro)
