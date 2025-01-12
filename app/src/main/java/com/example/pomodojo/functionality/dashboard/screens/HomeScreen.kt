@@ -1,7 +1,6 @@
 package com.example.pomodojo.functionality.dashboard.screens
 
 import android.content.Intent
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -30,7 +29,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.airbnb.lottie.compose.*
-import com.example.pomodojo.functionality.dashboard.Config
+import com.example.pomodojo.core.utils.getConfigFromPreferences
+import com.example.pomodojo.core.utils.saveConfigToPreferences
 import com.example.pomodojo.functionality.pomodoro.ui.WorkTimeActivity
 
 /**
@@ -47,7 +47,7 @@ fun MainScreen(
     val errorMessage by viewModel.errorMessage.observeAsState()
     val context = LocalContext.current
 
-    var config by remember { mutableStateOf(Config()) }
+    var config by remember { mutableStateOf(getConfigFromPreferences(context)) }
 
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.animation))
     val progress by animateLottieCompositionAsState(
@@ -64,7 +64,6 @@ fun MainScreen(
                 .padding(vertical = 16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -93,27 +92,6 @@ fun MainScreen(
                         )
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.data),
-                        contentDescription = "Data Icon",
-                        tint = colorResource(id = R.color.accentL),
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
-
-                IconButton(
-                    onClick = {
-                        viewModel.navigateToFaceScan()
-                        context.startActivity(Intent(context, FaceScan::class.java))
-                    },
-                    modifier = Modifier
-                        .padding(12.dp)
-                        .size(56.dp)
-                        .background(
-                            color = colorResource(id = R.color.primary),
-                            shape = RoundedCornerShape(10.dp)
-                        )
-                ) {
-                    Icon(
                         painter = painterResource(id = R.drawable.face),
                         contentDescription = "Face Scan",
                         tint = colorResource(id = R.color.accentL),
@@ -129,13 +107,17 @@ fun MainScreen(
                     .fillMaxWidth()
                     .padding(16.dp)
                     .clickable {
-                        Log.d("PomodoroConfig", "Config: $config")
+                        saveConfigToPreferences(
+                            context,
+                            config.shortBreak,
+                            config.focusTime,
+                            config.longBreak,
+                            config.iterations
+                        )
                         viewModel.navigateToPomodoro()
-                        val intent = Intent(context, WorkTimeActivity::class.java).apply {
-                            putExtra("config", config)
-                        }
+                        val intent = Intent(context, WorkTimeActivity::class.java)
                         context.startActivity(intent)
-                               },
+                    },
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.primary))
             ) {
@@ -188,7 +170,9 @@ fun MainScreen(
                 fontWeight = FontWeight.Bold,
                 color = colorResource(id = R.color.primary),
                 textAlign = TextAlign.Start,
-                modifier = Modifier.align(Alignment.Start).padding(16.dp)
+                modifier = Modifier
+                    .align(Alignment.Start)
+                    .padding(16.dp)
             )
 
             Row(
@@ -274,7 +258,6 @@ fun CustomizeSessions(color: Color, text: String, initialNumbers: Int, onValueCh
                 modifier = Modifier.padding(vertical = 4.dp)
             )
 
-            // Decrease button
             IconButton(
                 onClick = {
                     if (numbers > 0) {
@@ -292,7 +275,6 @@ fun CustomizeSessions(color: Color, text: String, initialNumbers: Int, onValueCh
                 )
             }
 
-            // Label for the card
             Text(
                 text = text,
                 fontSize = 18.sp,
