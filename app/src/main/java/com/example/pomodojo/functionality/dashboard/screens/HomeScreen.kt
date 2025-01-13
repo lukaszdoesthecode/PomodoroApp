@@ -31,13 +31,12 @@ import androidx.compose.ui.graphics.Color
 import com.airbnb.lottie.compose.*
 import com.example.pomodojo.core.utils.getConfigFromPreferences
 import com.example.pomodojo.core.utils.saveConfigToPreferences
-import com.example.pomodojo.functionality.pomodoro.ui.WorkTimeActivity
+import com.example.pomodojo.functionality.historyanalysis.ui.UserHistoryActivity
 
 /**
- * Composable function that displays the main screen of the application.
+ * Main composable function that displays the dashboard of the application.
  *
- * @param viewModel The ViewModel that handles the logic for the Home screen.
- * @param backgroundColor The background color of the screen.
+ * @param viewModel The ViewModel that manages state and business logic for the Home screen.
  */
 @Composable
 fun MainScreen(
@@ -81,6 +80,26 @@ fun MainScreen(
 
                 IconButton(
                     onClick = {
+                        viewModel.navigateToDataAnalysis()
+                        context.startActivity(Intent(context, UserHistoryActivity::class.java))
+                    },
+                    modifier = Modifier
+                        .size(56.dp)
+                        .background(
+                            color = colorResource(id = R.color.primary),
+                            shape = RoundedCornerShape(10.dp)
+                        )
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.data),
+                        contentDescription = "Data Analysis",
+                        tint = colorResource(id = R.color.accentL),
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+
+                IconButton(
+                    onClick = {
                         viewModel.navigateToFaceScan()
                         context.startActivity(Intent(context, FaceScan::class.java))
                     },
@@ -115,7 +134,6 @@ fun MainScreen(
                             config.iterations
                         )
                         viewModel.navigateToPomodoro()
-
                     },
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.primary))
@@ -162,6 +180,7 @@ fun MainScreen(
             }
 
             Spacer(modifier = Modifier.height(16.dp))
+
 
             Text(
                 text = "Customize your sessions:",
@@ -216,6 +235,14 @@ fun MainScreen(
     }
 }
 
+/**
+ * Composable function to display customization cards for session settings.
+ *
+ * @param color The background color of the card.
+ * @param text The label for the setting.
+ * @param initialNumbers The initial value for the setting.
+ * @param onValueChange Callback function invoked when the value is updated.
+ */
 @Composable
 fun CustomizeSessions(color: Color, text: String, initialNumbers: Int, onValueChange: (Int) -> Unit) {
     var numbers by remember { mutableIntStateOf(initialNumbers) }
@@ -261,7 +288,7 @@ fun CustomizeSessions(color: Color, text: String, initialNumbers: Int, onValueCh
                 onClick = {
                     if (numbers > 0) {
                         numbers--
-                        onValueChange(numbers) // Update parent state
+                        onValueChange(numbers)
                     }
                 },
                 modifier = Modifier.size(48.dp)
@@ -287,7 +314,7 @@ fun CustomizeSessions(color: Color, text: String, initialNumbers: Int, onValueCh
 }
 
 /**
- * Composable function that previews the main screen.
+ * Preview function for the MainScreen composable.
  */
 @Preview(showBackground = true)
 @Composable

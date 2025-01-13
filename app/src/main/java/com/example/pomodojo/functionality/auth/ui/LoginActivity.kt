@@ -12,9 +12,11 @@ import com.example.pomodojo.functionality.auth.screens.LoginScreen
 import com.example.pomodojo.functionality.auth.viewmodel.LoginViewModel
 import com.example.pomodojo.functionality.dashboard.ui.HomeActivity
 
-
 /**
- * Activity that displays the Login screen and handles authentication logic.
+ * Activity that displays the Login screen and manages the authentication workflow.
+ *
+ * This activity initializes the [LoginViewModel] and observes navigation events
+ * to transition between screens such as SignUp and Home.
  */
 class LoginActivity : ComponentActivity() {
 
@@ -22,11 +24,6 @@ class LoginActivity : ComponentActivity() {
         androidx.lifecycle.ViewModelProvider(this)[LoginViewModel::class.java]
     }
 
-    /**
-     * Called when the activity is starting. This is where most initialization should go.
-     *
-     * @param savedInstanceState If the activity is being re-initialized after previously being shut down then this Bundle contains the data it most recently supplied in onSaveInstanceState(Bundle).
-     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -36,16 +33,17 @@ class LoginActivity : ComponentActivity() {
                 }
             }
         }
-
     }
 
     /**
-     * Composable function that displays the Login screen with the provided ViewModel.
+     * This function observes navigation events from the [LoginViewModel] to handle
+     * transitions to the SignUp screen or the Home screen based on user actions.
      *
-     * @param viewModel The ViewModel that handles the logic for the Login screen.
+     * @param viewModel The [LoginViewModel] that provides login logic and state.
      */
     @Composable
     fun LoginScreenWithViewModel(viewModel: LoginViewModel = viewModel()) {
+
         viewModel.navigateToSignUp.observe(this@LoginActivity) {
             startActivity(Intent(this@LoginActivity, SignUpActivity::class.java))
             finish()

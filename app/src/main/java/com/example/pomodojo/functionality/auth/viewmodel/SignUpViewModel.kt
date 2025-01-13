@@ -18,7 +18,6 @@ class SignUpViewModel(application: Application) : AndroidViewModel(application) 
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val _navigateToLogIn = MutableLiveData<Unit>()
     val navigateToLogIn: LiveData<Unit> = _navigateToLogIn
-
     private val _errorMessage = MutableLiveData<Pair<String, String>>()
 
     /**
@@ -67,6 +66,11 @@ class SignUpViewModel(application: Application) : AndroidViewModel(application) 
                 }
             }
     }
+
+    /**
+     * Navigates to the Login screen.
+     */
+
     fun navigateToLogIn() {
         _navigateToLogIn.postValue(Unit)
     }
