@@ -32,14 +32,14 @@ import kotlinx.coroutines.delay
  */
 @Composable
 fun ShortBreakScreen(context: Context) {
-    var timeLeft by remember { mutableStateOf(5 * 60) }
+    var timeLeft by remember { mutableStateOf(0) }
     var isPaused by remember { mutableStateOf(true) }
     val audioPlayer = remember { AudioPlayerService(context) }
     val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
 
-    timeLeft = getConfigFromPreferences(context).shortBreak * 60
-
     LaunchedEffect(Unit) {
+        val config = getConfigFromPreferences(context)
+        timeLeft = config.shortBreak * 60
         audioPlayer.playAudio(R.raw.vo_intro)
     }
 
@@ -151,7 +151,6 @@ fun ShortBreakScreen(context: Context) {
         }
     }
 }
-
 /**
  * Preview function for the ShortBreakScreen composable.
  */
