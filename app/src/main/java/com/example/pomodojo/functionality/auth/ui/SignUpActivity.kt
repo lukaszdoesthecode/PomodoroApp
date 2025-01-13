@@ -14,6 +14,7 @@ import com.example.pomodojo.functionality.auth.viewmodel.SignUpViewModel
 /**
  * Activity that displays the Sign-Up screen and handles the sign-up logic.
  */
+
 class SignUpActivity : ComponentActivity() {
     /**
      * Called when the activity is starting. This is where most initialization should go.
@@ -33,7 +34,6 @@ class SignUpActivity : ComponentActivity() {
 
     /**
      * Composable function that displays the Sign-Up screen with the provided ViewModel.
-     *
      * @param viewModel The ViewModel that handles the logic for the Sign-Up screen.
      */
     @Composable

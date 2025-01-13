@@ -7,7 +7,6 @@ import androidx.activity.compose.setContent
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.pomodojo.core.utils.ErrorSnackBar
 import com.example.pomodojo.functionality.pomodoro.ui.WorkTimeActivity
@@ -20,11 +19,6 @@ import com.example.pomodojo.functionality.facescan.FaceScan
  */
 class HomeActivity : ComponentActivity() {
 
-    /**
-     * Called when the activity is starting. This is where most initialization should go.
-     *
-     * @param savedInstanceState If the activity is being re-initialized after previously being shut down then this Bundle contains the data it most recently supplied in onSaveInstanceState(Bundle).
-     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -44,8 +38,15 @@ class HomeActivity : ComponentActivity() {
     @Composable
     fun MainScreenWithViewModel(viewModel: HomeViewModel = viewModel()) {
         val navigateToFaceScan = viewModel.navigateToFaceScan.observeAsState()
+        val navigateToDataAnalysis = viewModel.navigateToDataAnalysis.observeAsState()
         val navigateToPomodoro = viewModel.navigateToPomodoro.observeAsState()
         val errorMessage = viewModel.errorMessage.observeAsState()
+
+        navigateToDataAnalysis.value?.let {
+            startActivity(Intent(this, FaceScan::class.java))
+            finish()
+            viewModel.resetNavigation()
+        }
 
         navigateToFaceScan.value?.let {
             startActivity(Intent(this, FaceScan::class.java))

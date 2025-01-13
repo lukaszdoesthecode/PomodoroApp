@@ -30,11 +30,11 @@ import com.example.pomodojo.ui.theme.Primary
 import com.example.pomodojo.ui.theme.ShadowD
 import com.example.pomodojo.ui.theme.ShadowL
 import com.example.pomodojo.ui.theme.White
-
 /**
  * Composable function that displays the Login screen.
  *
  * @param viewModel The ViewModel that handles the logic for the Login screen.
+ * This includes managing user authentication and navigation.
  */
 @Composable
 fun LoginScreen(viewModel: LoginViewModel = viewModel()) {

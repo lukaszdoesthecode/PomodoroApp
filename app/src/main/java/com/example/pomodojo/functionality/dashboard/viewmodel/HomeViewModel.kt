@@ -7,15 +7,18 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
 /**
- * ViewModel for the Home screen.
+ * ViewModel for managing navigation and error states in the Home screen.
+ *
+ * This ViewModel is responsible for handling navigation to the Data Analysis, FaceScan and Pomodoro screens,
+ * as well as managing error messages and resetting navigation states.
  */
 class HomeViewModel : ViewModel() {
 
     private val _navigateToFaceScan = MutableLiveData<Boolean?>(null)
     val navigateToFaceScan: LiveData<Boolean?> = _navigateToFaceScan
 
-    private val _navigateToConfig = MutableLiveData<Boolean?>(null)
-    val navigateToConfig: LiveData<Boolean?> = _navigateToConfig
+    private val _navigateToDataAnalysis = MutableLiveData<Boolean?>(null)
+    val navigateToDataAnalysis: LiveData<Boolean?> = _navigateToDataAnalysis
 
     private val _navigateToPomodoro = MutableLiveData<Boolean?>(null)
     val navigateToPomodoro: LiveData<Boolean?> = _navigateToPomodoro
@@ -23,35 +26,27 @@ class HomeViewModel : ViewModel() {
     private val _errorMessage = MutableLiveData<Pair<String, String>?>(null)
     val errorMessage: LiveData<Pair<String, String>?> = _errorMessage
 
-
-
-
     /**
-     * Sends configuration data and navigates to the Config screen.
-     */
-    fun saveConfiguration(shortBreak: String, focusTime: String, longBreak: String, repetitions: String) {
-        viewModelScope.launch {
-            try {
-                val configData = mapOf(
-                    "shortBreak" to shortBreak,
-                    "focusTime" to focusTime,
-                    "longBreak" to longBreak,
-                    "repetitions" to repetitions
-                )
-                //  _navigateToConfig.value = configData
-            } catch (e: Exception) {
-                _errorMessage.value = Pair("Save Configuration Error", e.message ?: "Unknown error")
-            }
-        }
-    }
-
-    /**
-     * Navigates to the FaceScan screen.
+     * Navigates to the Face Scan screen.
      */
     fun navigateToFaceScan() {
         viewModelScope.launch {
             try {
                 _navigateToFaceScan.value = true
+            } catch (e: Exception) {
+                _errorMessage.value = Pair("Navigation Error", e.message ?: "Unknown error")
+            }
+        }
+    }
+
+    /**
+     * Navigates to the Data Analysis screen.
+     */
+
+    fun navigateToDataAnalysis() {
+        viewModelScope.launch {
+            try {
+                _navigateToDataAnalysis.value = true
             } catch (e: Exception) {
                 _errorMessage.value = Pair("Navigation Error", e.message ?: "Unknown error")
             }
@@ -72,7 +67,7 @@ class HomeViewModel : ViewModel() {
     }
 
     /**
-     * Resets the navigation state.
+     *Reset the Navigation.
      */
     fun resetNavigation() {
         viewModelScope.launch {
