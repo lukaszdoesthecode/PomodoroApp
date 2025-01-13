@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
@@ -34,6 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pomodojo.R
+import com.example.pomodojo.functionality.pomodoro.components.MenuBar
 import com.example.pomodojo.functionality.pomodoro.state.SessionState
 import com.example.pomodojo.ui.theme.PomodojoTheme
 import com.example.pomodojo.ui.theme.Primary
@@ -59,9 +61,8 @@ fun WorkTimeScreen(
             .padding(0.dp, 50.dp, 0.dp, 0.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
-
-        ) {
-        //text in a box with rounded corners
+    ) {
+        // Text in a box with rounded corners
         Box(
             modifier = Modifier
                 .background(
@@ -70,6 +71,7 @@ fun WorkTimeScreen(
                 )
                 .border(BorderStroke(2.dp, Color.Black), shape = RoundedCornerShape(20.dp))
                 .padding(8.dp)
+                .testTag("SessionStateBox")
         ) {
             Text(
                 text = getSessionStateString(sessionState),
@@ -90,7 +92,9 @@ fun WorkTimeScreen(
             ) {
                 Text(
                     text = mins,
-                    modifier = Modifier.padding(0.dp),
+                    modifier = Modifier
+                        .padding(0.dp)
+                        .testTag("MinutesText"),
                     color = White,
                     style = TextStyle(
                         fontSize = 200.sp,
@@ -102,7 +106,9 @@ fun WorkTimeScreen(
                 )
                 Text(
                     text = secs,
-                    modifier = Modifier.padding(0.dp),
+                    modifier = Modifier
+                        .padding(0.dp)
+                        .testTag("SecondsText"),
                     color = White,
                     style = TextStyle(
                         fontSize = 200.sp,
@@ -114,45 +120,11 @@ fun WorkTimeScreen(
                 )
             }
 
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(20.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(
-                    onClick = onClickReset,
-                    modifier = Modifier
-                        .background(ShadowD, shape = RoundedCornerShape(16.dp))
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Refresh,
-                        contentDescription = "Pause Icon",
-                        tint = White
-                    )
-                }
-                IconButton(
-                    onClick = onClickStartStop,
-                    modifier = Modifier
-                        .background(ShadowD, shape = RoundedCornerShape(16.dp))
-                        .size(75.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.PlayArrow,
-                        contentDescription = "Pause Icon",
-                        tint = White
-                    )
-                }
-                IconButton(
-                    onClick = onClickSkip,
-                    modifier = Modifier
-                        .background(ShadowD, shape = RoundedCornerShape(16.dp))
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowForward,
-                        contentDescription = "Pause Icon",
-                        tint = White
-                    )
-                }
-            }
+            MenuBar(
+                onLeftClick = onClickReset,
+                onCenterClick = { isPaused -> onClickStartStop() },
+                onRightClick = { isLightOn -> onClickSkip() }
+            )
         }
     }
 }

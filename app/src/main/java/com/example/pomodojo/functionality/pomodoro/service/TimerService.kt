@@ -42,7 +42,7 @@ class TimerService : Service() {
     var onFinishSession: (SessionState) -> Unit = {}
 
     private var performMainWorkJob: Job? = null
-    private lateinit var sharedPref: SharedPreferences
+    lateinit var sharedPref: SharedPreferences
 
     var sessionTimeMap = mapOf(
         SessionState.WORK to 1500,

@@ -1,8 +1,8 @@
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.googleGmsGoogleServices)
-    alias(libs.plugins.kotlin.compose)
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+    id("com.google.gms.google-services")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 android {
@@ -12,7 +12,7 @@ android {
     defaultConfig {
         applicationId = "com.example.pomodojo"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 33
         versionCode = 1
         versionName = "1.0"
 
@@ -71,13 +71,15 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.vision.common)
     implementation(libs.play.services.mlkit.face.detection)
-    testImplementation(libs.junit)
+    implementation(libs.androidx.ui.test.junit4.android)
+    testImplementation("junit:junit:4.13.2")
     testImplementation(libs.mockito.core)
     testImplementation(libs.mockito.kotlin)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
     implementation(libs.play.services.auth)
-    testImplementation(libs.robolectric.robolectric)
+    testImplementation("org.robolectric:robolectric:4.10.3") {
+        exclude(group = "androidx.webkit", module = "webkit")
+    }
+    testImplementation("org.robolectric:shadows-framework:4.10.3")
     androidTestImplementation(libs.androidx.core)
     testImplementation(libs.androidx.core.testing)
     testImplementation(libs.mockk)
@@ -89,17 +91,14 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.5.0")
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.1")
     implementation(libs.coil.compose)
     implementation("com.google.mlkit:face-detection:16.1.5")
     implementation("com.spotify.android:auth:1.2.5")
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
     implementation(libs.lottie)
     implementation(libs.android.lottie.compose)
-
-
 }

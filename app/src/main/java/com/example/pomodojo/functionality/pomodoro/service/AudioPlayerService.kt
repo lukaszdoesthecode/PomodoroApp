@@ -10,7 +10,7 @@ import com.example.pomodojo.R
  * @property context The context used to create the MediaPlayer.
  */
 class AudioPlayerService(private val context: Context) {
-    private var mediaPlayer: MediaPlayer? = null
+    var mediaPlayer: MediaPlayer? = null
     private var lastResId: Int? = null
 
     /**

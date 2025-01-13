@@ -38,6 +38,7 @@ coilCompose = "2.4.0"
 vision = "16.0.0"
 visionCommon = "17.3.0"
 playServicesMlkitFaceDetection = "17.1.0"
+uiTestJunit4Android = "1.7.6"
 
 [libraries]
 android-lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottieCompose" }
@@ -87,6 +88,7 @@ vision = { module = "com.google.mlkit:vision", version.ref = "vision" }
 vision-common = { group = "com.google.mlkit", name = "vision-common", version.ref = "visionCommon" }
 play-services-mlkit-face-detection = { group = "com.google.android.gms", name = "play-services-mlkit-face-detection", version.ref = "playServicesMlkitFaceDetection" }
 lottie = { module = "com.airbnb.android:lottie", version.ref = "lottie" }
+androidx-ui-test-junit4-android = { group = "androidx.compose.ui", name = "ui-test-junit4-android", version.ref = "uiTestJunit4Android" }
 
 
 [plugins]

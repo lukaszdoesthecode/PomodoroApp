@@ -9,6 +9,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.pomodojo.ui.theme.*
@@ -43,7 +44,8 @@ fun MenuBar(
             iconId = com.example.pomodojo.R.drawable.ic_options,
             backgroundColor = ShadowD,
             height = buttonHeight,
-            onClick = onLeftClick
+            onClick = onLeftClick,
+            modifier = Modifier.testTag("OptionsButton")
         )
 
         // Center Button - Toggle Pause/Play
@@ -54,7 +56,8 @@ fun MenuBar(
             onClick = {
                 isPaused = !isPaused
                 onCenterClick(isPaused)
-            }
+            },
+            modifier = Modifier.testTag("CenterButton")
         )
 
         // Right Button - Toggle Lightbulb ON/OFF
@@ -65,7 +68,8 @@ fun MenuBar(
             onClick = {
                 isLightOn = !isLightOn
                 onRightClick(isLightOn)
-            }
+            },
+            modifier = Modifier.testTag("LightbulbButton")
         )
     }
 }
@@ -83,7 +87,8 @@ fun MenuButton(
     iconId: Int,
     backgroundColor: Color,
     height: androidx.compose.ui.unit.Dp,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val width = height * 1.5f
 
@@ -91,7 +96,7 @@ fun MenuButton(
         shape = RoundedCornerShape(8.dp),
         color = backgroundColor,
         shadowElevation = 4.dp,
-        modifier = Modifier
+        modifier = modifier
             .width(width)
             .height(height)
             .clickable { onClick() }
