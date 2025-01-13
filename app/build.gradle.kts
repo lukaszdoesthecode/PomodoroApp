@@ -101,4 +101,8 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
     implementation(libs.lottie)
     implementation(libs.android.lottie.compose)
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.11.0")
+    testImplementation("net.bytebuddy:byte-buddy:1.14.5")
+
+
 }

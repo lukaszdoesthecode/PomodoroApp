@@ -10,28 +10,28 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.util.*
 
-class UserHistoryViewModel : ViewModel() {
+open class UserHistoryViewModel : ViewModel() {
 
     private val db = FirebaseFirestore.getInstance()
     private val userId = FirebaseAuth.getInstance().currentUser?.uid
 
     val _totalPomodoros = MutableStateFlow(0)
-    val totalPomodoros: StateFlow<Int> = _totalPomodoros
+    open val totalPomodoros: StateFlow<Int> = _totalPomodoros
 
     val _totalLongExercises = MutableStateFlow(0)
-    val totalLongExercises: StateFlow<Int> = _totalLongExercises
+    open val totalLongExercises: StateFlow<Int> = _totalLongExercises
 
     val _totalShortExercises = MutableStateFlow(0)
-    val totalShortExercises: StateFlow<Int> = _totalShortExercises
+    open val totalShortExercises: StateFlow<Int> = _totalShortExercises
 
     val _weeklyPomodoros = MutableStateFlow(0)
-    val weeklyPomodoros: StateFlow<Int> = _weeklyPomodoros
+    open val weeklyPomodoros: StateFlow<Int> = _weeklyPomodoros
 
     val _weeklyLongExercises = MutableStateFlow(0)
-    val weeklyLongExercises: StateFlow<Int> = _weeklyLongExercises
+    open val weeklyLongExercises: StateFlow<Int> = _weeklyLongExercises
 
     val _weeklyShortExercises = MutableStateFlow(0)
-    val weeklyShortExercises: StateFlow<Int> = _weeklyShortExercises
+    open val weeklyShortExercises: StateFlow<Int> = _weeklyShortExercises
 
     private val _navigateToHome = MutableLiveData<Boolean?>(null)
     val navigateToHome: LiveData<Boolean?> = _navigateToHome

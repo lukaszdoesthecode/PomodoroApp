@@ -194,7 +194,7 @@ class SpotifyPlaylist : AppCompatActivity() {
         })
     }
 
-    private fun refreshAccessToken(callback: (() -> Unit)? = null) {
+    fun refreshAccessToken(callback: (() -> Unit)? = null) {
         val refreshToken = getRefreshToken() ?: return
         val clientCredentials = "$clientId:$clientSecret"
         val encodedCredentials = Base64.encodeToString(clientCredentials.toByteArray(), Base64.NO_WRAP)
@@ -244,7 +244,7 @@ class SpotifyPlaylist : AppCompatActivity() {
         })
     }
 
-    private fun createSpotifyPlaylist(genre: String, mood: String) {
+    fun createSpotifyPlaylist(genre: String, mood: String) {
         if (accessToken == null) {
             Toast.makeText(this, "No access token available.", Toast.LENGTH_SHORT).show()
             return

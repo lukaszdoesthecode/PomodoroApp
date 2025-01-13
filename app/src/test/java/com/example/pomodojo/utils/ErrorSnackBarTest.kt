@@ -1,68 +1,99 @@
-//package com.example.pomodojo.utils
-//
-//import android.view.LayoutInflater
-//import android.view.View
-//import android.view.ViewGroup
-//import android.widget.TextView
-//import androidx.test.core.app.ApplicationProvider
-//import com.example.pomodojo.R
-//import com.example.pomodojo.core.utils.ErrorSnackBar
-//import com.google.android.material.snackbar.Snackbar
-//import io.mockk.*
-//import org.junit.Before
-//import org.junit.Test
-//import org.robolectric.RobolectricTestRunner
-//import org.robolectric.annotation.Config
-//import org.junit.runner.RunWith
-//
-///**
-// * Unit tests for the ErrorSnackBar class.
-// */
-//@RunWith(RobolectricTestRunner::class)
-//@Config(sdk = [33], application = android.app.Application::class)
-//class ErrorSnackBarTest {
-//
-//    private lateinit var rootView: ViewGroup
-//
-//    /**
-//     * Sets up the test environment.
-//     */
-//    @Before
-//    fun setUp() {
-//        val context = ApplicationProvider.getApplicationContext<android.app.Application>()
-//        rootView = LayoutInflater.from(context).inflate(R.layout.activity_main, null) as ViewGroup
-//    }
-//
-//    /**
-//     * Tests the showErrorSnackBar method.
-//     */
-//    @Test
-//    fun testShowErrorSnackBar() {
-//        val mainMessage = "Error occurred"
-//        val subMessage = "Please try again"
-//
-//        mockkStatic(Snackbar::class)
-//
-//        val snackbarMock = mockk<Snackbar>(relaxed = true)
-//        val snackbarViewMock = mockk<ViewGroup>(relaxed = true)
-//        every { Snackbar.make(any(), any<String>(), any()) } returns snackbarMock
-//        every { snackbarMock.view } returns snackbarViewMock
-//
-//        ErrorSnackBar.showErrorSnackBar(rootView, mainMessage, subMessage)
-//
-//        verify { Snackbar.make(rootView, "", Snackbar.LENGTH_LONG) }
-//
-//        val customView = LayoutInflater.from(rootView.context)
-//            .inflate(R.layout.custom_snackbar_error, rootView, false)
-//
-//        verify { snackbarViewMock.removeAllViews() }
-//        verify { snackbarViewMock.addView(customView) }
-//
-//        val mainTextView = customView.findViewById<TextView>(R.id.snackbar_main_text)
-//        val subTextView = customView.findViewById<TextView>(R.id.snackbar_sub_text)
-//        assert(mainTextView.text == mainMessage)
-//        assert(subTextView.text == subMessage)
-//
-//        verify { snackbarMock.show() }
-//    }
-//}
+package com.example.pomodojo.utils
+
+import android.os.Build
+import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.assertIsDisplayed
+import com.example.pomodojo.core.utils.ErrorSnackBar
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
+
+/**
+ * Unit tests for the ErrorSnackBar composable function.
+ */
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [28])
+class ErrorSnackBarTest {
+
+    @get:Rule
+    val composeTestRule = createComposeRule()
+
+    /**
+     * Sets up the test environment before each test.
+     */
+    @Before
+    fun setUp() {
+        val buildClass = Build::class.java
+        val field = buildClass.getDeclaredField("FINGERPRINT")
+        field.isAccessible = true
+        field.set(null, "test_fingerprint")
+    }
+
+    /**
+     * Tests that the ErrorSnackBar displays the correct messages.
+     */
+    @Test
+    fun errorSnackBar_DisplaysCorrectMessages() {
+        val mainMessage = "Error occurred"
+        val subMessage = "Please try again"
+
+        composeTestRule.setContent {
+            ErrorSnackBar(mainMessage = mainMessage, subMessage = subMessage)
+        }
+
+        composeTestRule.onNodeWithText(mainMessage).assertIsDisplayed()
+        composeTestRule.onNodeWithText(subMessage).assertIsDisplayed()
+    }
+
+    /**
+     * Tests that the ErrorSnackBar handles empty messages.
+     */
+    @Test
+    fun errorSnackBar_HandlesEmptyMessages() {
+        val mainMessage = ""
+        val subMessage = ""
+
+        composeTestRule.setContent {
+            ErrorSnackBar(mainMessage = mainMessage, subMessage = subMessage)
+        }
+
+        composeTestRule.onNodeWithText(mainMessage).assertDoesNotExist()
+        composeTestRule.onNodeWithText(subMessage).assertDoesNotExist()
+    }
+
+    /**
+     * Tests that the ErrorSnackBar displays long messages correctly.
+     */
+    @Test
+    fun errorSnackBar_DisplaysLongMessages() {
+        val mainMessage = "This is a very long error message that should be displayed correctly without any issues."
+        val subMessage = "This is a very long sub-message that provides additional context about the error and should also be displayed correctly."
+
+        composeTestRule.setContent {
+            ErrorSnackBar(mainMessage = mainMessage, subMessage = subMessage)
+        }
+
+        composeTestRule.onNodeWithText(mainMessage).assertIsDisplayed()
+        composeTestRule.onNodeWithText(subMessage).assertIsDisplayed()
+    }
+
+    /**
+     * Tests that the ErrorSnackBar handles special characters in messages.
+     */
+    @Test
+    fun errorSnackBar_HandlesSpecialCharacters() {
+        val mainMessage = "Error: Something went wrong! @#\$%^&*()"
+        val subMessage = "Please try again later. ~`<>?/|\\"
+
+        composeTestRule.setContent {
+            ErrorSnackBar(mainMessage = mainMessage, subMessage = subMessage)
+        }
+
+        composeTestRule.onNodeWithText(mainMessage).assertIsDisplayed()
+        composeTestRule.onNodeWithText(subMessage).assertIsDisplayed()
+    }
+}

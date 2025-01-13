@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.example.pomodojo.functionality.dashboard.Config
 
-private const val PREFS_NAME = "PomodojoPrefs"
+const val PREFS_NAME = "PomodojoPrefs"
 private const val KEY_SHORT_BREAK = "shortBreak"
 private const val KEY_FOCUS_TIME = "focusTime"
 private const val KEY_LONG_BREAK = "longBreak"

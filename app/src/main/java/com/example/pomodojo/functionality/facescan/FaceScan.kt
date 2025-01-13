@@ -56,7 +56,7 @@ class FaceScan : ComponentActivity() {
         }
 
     private var selectedBitmap: Bitmap? by mutableStateOf(null)
-    private var detectedEmotion: String by mutableStateOf("")
+    var detectedEmotion: String by mutableStateOf("")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

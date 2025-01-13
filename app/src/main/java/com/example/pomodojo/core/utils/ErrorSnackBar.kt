@@ -24,39 +24,45 @@ import com.example.pomodojo.ui.theme.Primary
  */
 @Composable
 fun ErrorSnackBar(mainMessage: String, subMessage: String) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 48.dp, top = 16.dp, end = 16.dp, bottom = 16.dp)
-    ) {
-        Row(
+    if (mainMessage.isNotEmpty() || subMessage.isNotEmpty()) {
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.White, shape = RoundedCornerShape(16.dp))
-                .padding(start = 40.dp, top = 16.dp, end = 16.dp, bottom = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(start = 48.dp, top = 16.dp, end = 16.dp, bottom = 16.dp)
         ) {
-            Column {
-                Text(
-                    text = mainMessage,
-                    color = Error,
-                    style = androidx.compose.material3.MaterialTheme.typography.bodyLarge
-                )
-                Text(
-                    text = subMessage,
-                    color = Primary,
-                    style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
-                )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White, shape = RoundedCornerShape(16.dp))
+                    .padding(start = 40.dp, top = 16.dp, end = 16.dp, bottom = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    if (mainMessage.isNotEmpty()) {
+                        Text(
+                            text = mainMessage,
+                            color = Error,
+                            style = androidx.compose.material3.MaterialTheme.typography.bodyLarge
+                        )
+                    }
+                    if (subMessage.isNotEmpty()) {
+                        Text(
+                            text = subMessage,
+                            color = Primary,
+                            style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
             }
+            Image(
+                painter = painterResource(id = R.drawable.ic_error),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(56.dp)
+                    .align(Alignment.CenterStart)
+                    .offset(x = (-32).dp)
+            )
         }
-        Image(
-            painter = painterResource(id = R.drawable.ic_error),
-            contentDescription = null,
-            modifier = Modifier
-                .size(56.dp)
-                .align(Alignment.CenterStart)
-                .offset(x = (-32).dp)
-        )
     }
 }
 
