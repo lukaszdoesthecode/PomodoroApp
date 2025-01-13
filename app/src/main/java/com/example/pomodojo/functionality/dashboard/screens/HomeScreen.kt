@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import com.airbnb.lottie.compose.*
 import com.example.pomodojo.core.utils.getConfigFromPreferences
 import com.example.pomodojo.core.utils.saveConfigToPreferences
+import com.example.pomodojo.functionality.historyanalysis.ui.UserHistoryActivity
 
 /**
  * Main composable function that displays the dashboard of the application.
@@ -79,8 +80,8 @@ fun MainScreen(
 
                 IconButton(
                     onClick = {
-                        viewModel.navigateToFaceScan()
-                        context.startActivity(Intent(context, FaceScan::class.java))
+                        viewModel.navigateToDataAnalysis()
+                        context.startActivity(Intent(context, UserHistoryActivity::class.java))
                     },
                     modifier = Modifier
                         .size(56.dp)

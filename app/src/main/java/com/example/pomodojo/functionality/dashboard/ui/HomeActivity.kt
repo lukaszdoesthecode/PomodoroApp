@@ -13,6 +13,7 @@ import com.example.pomodojo.functionality.pomodoro.ui.WorkTimeActivity
 import com.example.pomodojo.functionality.dashboard.screens.MainScreen
 import com.example.pomodojo.functionality.dashboard.viewmodel.HomeViewModel
 import com.example.pomodojo.functionality.facescan.FaceScan
+import com.example.pomodojo.functionality.historyanalysis.ui.UserHistoryActivity
 
 /**
  * Activity that hosts the Home screen of the application.
@@ -43,7 +44,7 @@ class HomeActivity : ComponentActivity() {
         val errorMessage = viewModel.errorMessage.observeAsState()
 
         navigateToDataAnalysis.value?.let {
-            startActivity(Intent(this, FaceScan::class.java))
+            startActivity(Intent(this, UserHistoryActivity::class.java))
             finish()
             viewModel.resetNavigation()
         }

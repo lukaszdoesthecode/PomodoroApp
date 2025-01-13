@@ -26,7 +26,7 @@
             android:name=".functionality.auth.ui.SignUpActivity"
             android:exported="false" />
         <activity
-            android:name=".functionality.auth.ui.FollowUpActivity"
+            android:name=".functionality.historyanalysis.ui.UserHistoryActivity"
             android:exported="false" />
         <activity
             android:name=".functionality.auth.ui.LoginActivity"
