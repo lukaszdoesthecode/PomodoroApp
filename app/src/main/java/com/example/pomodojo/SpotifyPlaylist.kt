@@ -30,7 +30,7 @@ class SpotifyPlaylist : AppCompatActivity() {
     private var refreshToken: String? = null
 
     // User selections and detected emotion
-    private var detectedEmotion: String? = "happy"
+    private var detectedEmotion: String? = ""
     private var selectedGenre: String? = null
     private var selectedMood: String? = null
 
@@ -377,7 +377,6 @@ class SpotifyPlaylist : AppCompatActivity() {
 
                     Log.d("SpotifyPlaylist", "Tracks Array: $tracksArray")
 
-                    // **Fetch both URI and Track Name**
                     val trackData = mutableListOf<Pair<String, String>>()
                     for (i in 0 until tracksArray.length()) {
                         val track = tracksArray.getJSONObject(i)
@@ -388,19 +387,15 @@ class SpotifyPlaylist : AppCompatActivity() {
 
                     Log.d("SpotifyPlaylist", "Track Data: $trackData")
 
-                    // **Filter Tracks Based on Track Names**
                     val filteredTrackUris = filterTracksBasedOnMood(trackData, selectedMood)
                     Log.d("SpotifyPlaylist", "Filtered Track URIs: $filteredTrackUris")
 
-                    // **Fetch 10 Random Tracks Based on Mood**
                     getRandomTracksForMood(selectedMood) { randomTrackUris ->
                         Log.d("SpotifyPlaylist", "Random Track URIs received: $randomTrackUris")
 
-                        // **Combine both lists and ensure uniqueness**
                         val combinedTrackUris = (filteredTrackUris + randomTrackUris).distinct()
                         Log.d("SpotifyPlaylist", "Combined Track URIs: $combinedTrackUris")
 
-                        // **Add the combined tracks to the playlist**
                         addTracksToPlaylist(playlistId, combinedTrackUris)
                     }
                 } else {

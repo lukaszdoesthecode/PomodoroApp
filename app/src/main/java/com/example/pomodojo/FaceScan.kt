@@ -22,7 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -118,7 +117,6 @@ class FaceScan : ComponentActivity() {
 
                         Toast.makeText(this, "Detected Emotion: $detectedEmotion", Toast.LENGTH_SHORT).show()
 
-                        // Create intent and send the detected emotion to SpotifyPlaylist activity
                         val intent = Intent(this, SpotifyPlaylist::class.java).apply {
                             putExtra("DETECTED_EMOTION", detectedEmotion)
                         }

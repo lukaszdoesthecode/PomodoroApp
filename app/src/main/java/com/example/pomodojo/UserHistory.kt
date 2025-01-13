@@ -50,21 +50,6 @@ class UserHistory : ViewModel() {
  * and short breathing exercises from the user's Firestore collection. The data is then used to update
  * corresponding state flows to reflect the user's progress and activity.
  *
- * The function performs the following tasks:
- * - Connects to Firestore and accesses the current user's Pomodoro data.
- * - Iterates through the user's records to calculate:
- *   - Total Pomodoros completed.
- *   - Total long breathing exercises completed.
- *   - Total short breathing exercises completed.
- *   - Weekly Pomodoros completed in the last 7 days.
- *   - Weekly long breathing exercises completed in the last 7 days.
- *   - Weekly short breathing exercises completed in the last 7 days.
- * - Updates the ViewModel's state flows with the calculated values.
- *
- * The function handles both success and failure cases when fetching data from Firestore:
- * - On success: Updates the state flows with the aggregated data.
- * - On failure: Handles any errors that occur during data retrieval.
- *
  * Preconditions:
  * - The user must be logged in, and a valid user ID must be available.
  **/
@@ -111,7 +96,6 @@ class UserHistory : ViewModel() {
                         _weeklyShortExercises.value = weeklyShortExercisesCount
                     }
                     .addOnFailureListener {
-                        // Handle failure
                     }
             }
         }
